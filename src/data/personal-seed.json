@@ -1,0 +1,162 @@
+{
+  "schemaVersion": 1,
+  "items": {
+    "demo-explore-radar": {
+      "id": "demo-explore-radar",
+      "title": "示例：Radar 阶段",
+      "description": "Radar 是注意力的候场区。\n\n把「可能值得了解，但还不必现在投入」的想法先放在这里。它们可以等待、可以筛选，也可以在注意力梳理时再决定是否进入 Focus。\n\n适合：灵感、书单、待读文章、还没想清楚的问题。",
+      "board": "explore",
+      "category": "主题 / 问题",
+      "topics": [
+        "入门示例"
+      ],
+      "stage": "radar",
+      "capturedAt": "2026-01-01T00:00:00.000Z",
+      "stageEnteredAt": "2026-01-01T00:00:00.000Z",
+      "lastTouchedAt": "2026-01-01T00:00:00.000Z",
+      "lastProgressAt": null,
+      "version": 1
+    },
+    "demo-explore-focus": {
+      "id": "demo-explore-focus",
+      "title": "示例：Focus 阶段",
+      "description": "Focus 是近期真正值得认真关注的事项。\n\n从 Radar 里挑出少数卡片放进这里，表示你愿意在接下来一段时间里持续想、读、记笔记或澄清问题。Focus 有 WIP 上限，避免同时关注过多。\n\n适合：正在跟进的主题、近期要读完的材料、需要想清楚的问题。",
+      "board": "explore",
+      "category": "书籍 / 影音",
+      "topics": [
+        "入门示例"
+      ],
+      "stage": "focus",
+      "capturedAt": "2026-01-01T00:00:00.000Z",
+      "stageEnteredAt": "2026-01-01T00:00:00.000Z",
+      "lastTouchedAt": "2026-01-01T00:00:00.000Z",
+      "lastProgressAt": null,
+      "version": 1
+    },
+    "demo-explore-engage": {
+      "id": "demo-explore-engage",
+      "title": "示例：Engage 阶段",
+      "description": "Engage 表示你已经承诺真实投入。\n\n进入这里不是「继续观望」，而是开始行动：深入阅读、做实验、写笔记、拆任务或接入滴答清单。Engage 的上限更紧，只留给真正在推进的事项。\n\n适合：正在动手做的学习项目、需要连续投入的研究。",
+      "board": "explore",
+      "category": "课程 / 体验",
+      "topics": [
+        "入门示例"
+      ],
+      "stage": "engage",
+      "capturedAt": "2026-01-01T00:00:00.000Z",
+      "stageEnteredAt": "2026-01-01T00:00:00.000Z",
+      "lastTouchedAt": "2026-01-01T00:00:00.000Z",
+      "lastProgressAt": null,
+      "version": 1
+    },
+    "demo-explore-outcome": {
+      "id": "demo-explore-outcome",
+      "title": "示例：Outcome & Review 阶段",
+      "description": "Outcome & Review 用来承接「已有结果、等待复盘」的事项。\n\n当你完成一轮投入后，把卡片移到这里：整理收获、判断是否归档，或派生出新的探索/创造线索。它不是垃圾桶，而是收束与反思区。\n\n适合：已读完并写了笔记的材料、已得出结论的问题。",
+      "board": "explore",
+      "category": "主题 / 问题",
+      "topics": [
+        "入门示例"
+      ],
+      "stage": "outcome",
+      "capturedAt": "2026-01-01T00:00:00.000Z",
+      "stageEnteredAt": "2026-01-01T00:00:00.000Z",
+      "lastTouchedAt": "2026-01-01T00:00:00.000Z",
+      "lastProgressAt": null,
+      "version": 1
+    },
+    "demo-create-radar": {
+      "id": "demo-create-radar",
+      "title": "示例：探索与创造分别放什么",
+      "description": "## 两个板块怎么分\n\n**探索**回答：我渴望了解什么？\n放好奇、学习、阅读、观察——目标是弄清楚、学明白，而不是立刻交付成品。\n\n**创造**回答：我想要创造什么？\n放作品、产品、写作、活动、项目——目标是做出来、表达出去、推动一件事发生。\n\n同一主题可以两边各有一张卡：探索侧弄清问题，创造侧落地产出。不确定时，先放探索的 Radar，想清楚再决定是否转到创造。\n\n读完后可以删除这些示例卡，开始记录你自己的事项。",
+      "board": "create",
+      "category": "写作 / 表达",
+      "topics": [
+        "入门示例"
+      ],
+      "stage": "radar",
+      "capturedAt": "2026-01-01T00:00:00.000Z",
+      "stageEnteredAt": "2026-01-01T00:00:00.000Z",
+      "lastTouchedAt": "2026-01-01T00:00:00.000Z",
+      "lastProgressAt": null,
+      "version": 1
+    }
+  },
+  "events": [
+    {
+      "id": "event-import-demo-explore-radar",
+      "type": "stage_changed",
+      "itemId": "demo-explore-radar",
+      "fromStage": null,
+      "toStage": "radar",
+      "transitionMode": "import",
+      "occurredAt": "2026-01-01T00:00:00.000Z"
+    },
+    {
+      "id": "event-import-demo-explore-focus",
+      "type": "stage_changed",
+      "itemId": "demo-explore-focus",
+      "fromStage": null,
+      "toStage": "focus",
+      "transitionMode": "import",
+      "occurredAt": "2026-01-01T00:00:00.000Z"
+    },
+    {
+      "id": "event-import-demo-explore-engage",
+      "type": "stage_changed",
+      "itemId": "demo-explore-engage",
+      "fromStage": null,
+      "toStage": "engage",
+      "transitionMode": "import",
+      "occurredAt": "2026-01-01T00:00:00.000Z"
+    },
+    {
+      "id": "event-import-demo-explore-outcome",
+      "type": "stage_changed",
+      "itemId": "demo-explore-outcome",
+      "fromStage": null,
+      "toStage": "outcome",
+      "transitionMode": "import",
+      "occurredAt": "2026-01-01T00:00:00.000Z"
+    },
+    {
+      "id": "event-import-demo-create-radar",
+      "type": "stage_changed",
+      "itemId": "demo-create-radar",
+      "fromStage": null,
+      "toStage": "radar",
+      "transitionMode": "import",
+      "occurredAt": "2026-01-01T00:00:00.000Z"
+    }
+  ],
+  "relations": [],
+  "reviews": [],
+  "exportReceipts": [],
+  "settings": {
+    "boards": [
+      "explore",
+      "create"
+    ],
+    "focusWipLimit": 10,
+    "engageWipLimit": 4,
+    "stalledDays": {
+      "radar": 180,
+      "focus": 30,
+      "engage": 14
+    },
+    "tickTickListName": "收集箱",
+    "tickTickCreateMode": "deeplink",
+    "categories": {
+      "explore": [
+        { "name": "主题 / 问题", "color": "#2f6fb2" },
+        { "name": "书籍 / 影音", "color": "#7d5ba6" },
+        { "name": "课程 / 体验", "color": "#1e8a70" }
+      ],
+      "create": [
+        { "name": "产品 / 项目", "color": "#d0533c" },
+        { "name": "写作 / 表达", "color": "#c98a12" },
+        { "name": "活动 / 组织", "color": "#5d6f3f" }
+      ]
+    }
+  }
+}

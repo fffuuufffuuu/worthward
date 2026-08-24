@@ -1,0 +1,9 @@
+node_modules/
+dist/
+node/
+work/
+release/
+.superpowers/
+*.log
+*.tsbuildinfo
+所向.exe
