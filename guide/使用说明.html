@@ -147,14 +147,14 @@
     .nav-links .nav-start {
       padding: 7px 13px;
       color: var(--white);
-      background: var(--signal);
+      background: var(--deep);
       border-radius: 7px;
       font-weight: 700;
       transition: background .2s ease, transform .2s ease;
     }
     .nav-links .nav-start::after { display: none; }
     .nav-links .nav-start:hover {
-      background: var(--deep);
+      background: #244b58;
       transform: translateY(-1px);
     }
     main { overflow: hidden; }
@@ -1051,7 +1051,7 @@
         <div class="feature-grid reveal">
           <article class="feature-card feature-card--lead">
             <span class="feature-card__label">01 · HUMAN IN CONTROL</span>
-            <h3>AI 辅助提出建议，<br>决定必须由你确认。</h3>
+            <h3>AI 提出聚焦方向建议，<br>由你确认投入方向。</h3>
             <p><strong>所向只在你点击之后调用 AI。</strong>标签、拆解与晋级建议都可以修改；没有确认的内容，不会擅自改变你的工作台。</p>
             <span class="choice-seal" aria-hidden="true">YOUR CHOICE</span>
           </article>
@@ -1143,8 +1143,8 @@
     <div class="footer-grid">
       <div class="footer-line">所向 · WORTHWARD · Attention, directed.</div>
       <div class="footer-meta">
-        <span class="footer-author">作者：待补充</span>
-        <a class="footer-github" href="#" aria-disabled="true" aria-label="GitHub 链接待补充" title="GitHub 链接待补充">GitHub</a>
+        <span class="footer-author">作者：CashewLab</span>
+        <a class="footer-github" href="https://github.com/fffuuufffuuu/worthward" target="_blank" rel="noreferrer">GitHub</a>
       </div>
       <div class="footer-note">让注意力，朝向真正值得的事。</div>
     </div>
@@ -1178,10 +1178,6 @@
         activateTab(next);
         next.focus();
       });
-    });
-
-    document.querySelectorAll('a[aria-disabled="true"]').forEach((link) => {
-      link.addEventListener('click', (event) => event.preventDefault());
     });
 
     const navLinks = [...document.querySelectorAll('.nav-links a')];
