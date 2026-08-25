@@ -337,12 +337,24 @@ function DetailDrawer({ item, categories, receipt, onClose, onSave, onMove, onAd
   </aside></div>
 }
 
+function capacityAlert(current: number, limit: number) {
+  if (current > limit) {
+    return { className: 'capacity-over' as const, label: `超出 ${current - limit} 项` }
+  }
+  if (current === limit) {
+    return { className: 'capacity-full' as const, label: '已达上限' }
+  }
+  return { className: 'capacity-normal' as const, label: null }
+}
+
 function InsightPage({ workspace, onStartReview, onOpenItem }: {
   workspace: WorkspaceState
   onStartReview: () => void
   onOpenItem: (item: AttentionItem) => void
 }) {
   const insight = buildInsights(workspace)
+  const focusCapacity = capacityAlert(insight.stageCounts.focus, workspace.settings.focusWipLimit)
+  const engageCapacity = capacityAlert(insight.stageCounts.engage, workspace.settings.engageWipLimit)
   const [activeTopic, setActiveTopic] = useState<string | null>(null)
   const [drilldown, setDrilldown] = useState<{ topic: string; source: 'current' | 'recent' } | null>(null)
   const stalledByBoard = {
@@ -393,7 +405,7 @@ function InsightPage({ workspace, onStartReview, onOpenItem }: {
   }
 
   return <main className="workspace-main insights-page"><section className="workspace-heading insight-heading"><div><p className="eyebrow">INSIGHTS / ATTENTION</p><h1>注意力洞察</h1></div><FocusQuoteRotator /><button type="button" className="primary-button insight-review-cta" onClick={onStartReview}>开始注意力梳理</button></section>
-    <section className="metric-strip"><div><small>Radar</small><strong>{insight.stageCounts.radar}</strong><span>项</span></div><div><small>正在 Focus</small><strong>{insight.stageCounts.focus}</strong><span>/ {workspace.settings.focusWipLimit}</span></div><div><small>正在 Engage</small><strong>{insight.stageCounts.engage}</strong><span>/ {workspace.settings.engageWipLimit}</span></div><div><small>等待 Review</small><strong>{insight.stageCounts.outcome}</strong><span>项</span></div></section>
+    <section className="metric-strip"><div><small>Radar</small><strong>{insight.stageCounts.radar}</strong><span>项</span></div><div className={`capacity-metric ${focusCapacity.className}`}><small>正在 Focus</small><strong>{insight.stageCounts.focus}</strong><span>/ {workspace.settings.focusWipLimit}</span>{focusCapacity.label && <em className="capacity-status">{focusCapacity.label}</em>}</div><div className={`capacity-metric ${engageCapacity.className}`}><small>正在 Engage</small><strong>{insight.stageCounts.engage}</strong><span>/ {workspace.settings.engageWipLimit}</span>{engageCapacity.label && <em className="capacity-status">{engageCapacity.label}</em>}</div><div><small>等待 Review</small><strong>{insight.stageCounts.outcome}</strong><span>项</span></div></section>
     <div className="insight-grid"><section className="insight-card balance-card insight-balance-card"><div className="insight-balance-heading"><div><p className="eyebrow">BALANCE</p><h2>探索 / 创造</h2></div><strong className="insight-balance-total" aria-label={`共 ${insight.boardCounts.explore + insight.boardCounts.create} 张`}>{insight.boardCounts.explore + insight.boardCounts.create}</strong></div><div className="balance-chart" role="img" aria-label={`探索 ${insight.boardCounts.explore} 张，创造 ${insight.boardCounts.create} 张`}><div className="balance-segment balance-explore" style={{ flexGrow: Math.max(1, insight.boardCounts.explore) }}><svg className="balance-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5" fill="none" stroke="currentColor" strokeWidth="1.8" /><path d="M16 16l5 5" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" /></svg><span>探索</span><b>{insight.boardCounts.explore}</b></div><div className="balance-segment balance-create" style={{ flexGrow: Math.max(1, insight.boardCounts.create) }}><svg className="balance-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 19l2.2-7.5L16.5 2.2a2.1 2.1 0 0 1 3 3L10.5 16.8 5 19z" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" /><path d="M13.2 5.5l5.3 5.3" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" /></svg><span>创造</span><b>{insight.boardCounts.create}</b></div></div></section>
       <section className="insight-card insight-stages-card"><p className="eyebrow">STAGES / NOW</p><h2>当前阶段分布</h2><svg className="stage-funnel-chart" viewBox="0 0 440 176" role="img" aria-label={`阶段分布漏斗：Radar ${insight.stageCounts.radar} 张，Focus ${insight.stageCounts.focus} 张，Engage ${insight.stageCounts.engage} 张，Outcome & Review ${insight.stageCounts.outcome} 张`}>{activeStages.map((stage, index) => { const count = insight.stageCounts[stage.id]; const width = funnelWidthFor(count); const y = 12 + index * 42; const colors = ['#284a68', '#d9a01f', '#df634d', '#4b8279']; const barW = width * 2.35; const barX = 168 - barW / 2; return <g key={stage.id}><rect aria-label={`${stage.label}：${count} 张`} x={barX} y={y} width={barW} height={30} rx={2} fill={colors[index]} /><text x={barX + barW + 14} y={y + 21} className="funnel-outside">{stage.label} · {count} 张</text></g> })}</svg></section>
       <section className="insight-card insight-recent-card"><p className="eyebrow">RECENT / 30 DAYS</p><h2>近 30 天关注最多的领域</h2>{recentTopics.length ? <ol className="recent-topic-list">{recentTopics.map(([topic, count]) => <li key={topic}><button onClick={() => openTopic(topic, 'recent')} aria-label={`打开近期主题：${topic}（${count} 张）`}><span>{topic}</span><b>{count} 张</b></button></li>)}</ol> : <p className="subtle">近 30 天还没有新加入或推进的卡片。</p>}</section>

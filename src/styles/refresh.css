@@ -46,6 +46,34 @@
 .insight-grid, .settings-grid { gap: 16px; }
 .insight-card { border-color: rgba(23, 51, 65, .15); background: rgba(255, 255, 255, .72); }
 .insight-card h2, .settings-page h2 { color: var(--ink); }
+.metric-strip > .capacity-metric {
+  position: relative;
+}
+
+.metric-strip > .capacity-metric.capacity-full {
+  border-color: #c9a227;
+  background: #fff8e8;
+  box-shadow: inset 0 3px #c9a227;
+}
+
+.metric-strip > .capacity-metric.capacity-over {
+  border-color: #b54b3f;
+  background: #fff2ef;
+  box-shadow: inset 0 3px #b54b3f;
+}
+
+.capacity-status {
+  display: block;
+  margin-top: 10px;
+  color: #735900;
+  font: 700 11px/1.35 "Microsoft YaHei", sans-serif;
+  font-style: normal;
+}
+
+.capacity-over .capacity-status,
+.capacity-over strong {
+  color: #8e3a28;
+}
 .archive-grid { border-color: rgba(23, 51, 65, .15); background: rgba(255, 255, 255, .62); }
 .archive-row { min-height: 64px; border-bottom-color: rgba(23, 51, 65, .11); }
 .archive-row:hover { background: rgba(80, 197, 167, .08); }

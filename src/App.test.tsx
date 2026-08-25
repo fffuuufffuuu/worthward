@@ -33,6 +33,43 @@ function saveTopicWorkspace() {
   saveWorkspace(archivedState.state)
 }
 
+function saveCapacityWorkspace(
+  focusCount: number,
+  engageCount: number,
+  focusLimit = 2,
+  engageLimit = 2,
+) {
+  const state = createInitialWorkspace()
+  const timestamp = '2026-08-25T00:00:00.000Z'
+  const items: WorkspaceState['items'] = {}
+  const addItems = (stage: 'focus' | 'engage', count: number) => {
+    for (let index = 0; index < count; index += 1) {
+      const id = `${stage}-${index + 1}`
+      items[id] = {
+        id,
+        title: `${stage} ${index + 1}`,
+        description: '',
+        board: index % 2 ? 'create' : 'explore',
+        category: null,
+        topics: [],
+        stage,
+        capturedAt: timestamp,
+        stageEnteredAt: timestamp,
+        lastTouchedAt: timestamp,
+        lastProgressAt: null,
+        version: 1,
+      }
+    }
+  }
+  addItems('focus', focusCount)
+  addItems('engage', engageCount)
+  saveWorkspace({
+    ...state,
+    items,
+    settings: { ...state.settings, focusWipLimit: focusLimit, engageWipLimit: engageLimit },
+  })
+}
+
 describe('attention workbench interface', () => {
   beforeEach(() => {
     localStorage.clear()
@@ -342,6 +379,34 @@ describe('attention workbench interface', () => {
     expect(screen.getByText('Radar', { selector: '.metric-strip small' })).toBeVisible()
     expect(screen.queryByText('停滞项目', { selector: '.metric-strip small' })).toBeNull()
     expect(within(aging).getByLabelText(/停滞 \d+ 项/)).toBeVisible()
+  })
+
+  it('distinguishes full and over capacity in insight metrics', async () => {
+    saveCapacityWorkspace(2, 3)
+    const user = userEvent.setup()
+    render(<App />)
+    await user.click(screen.getByRole('button', { name: '洞察' }))
+
+    const focusMetric = screen.getByText('正在 Focus').closest('div')!
+    const engageMetric = screen.getByText('正在 Engage').closest('div')!
+    expect(focusMetric).toHaveClass('capacity-metric', 'capacity-full')
+    expect(within(focusMetric).getByText('已达上限')).toBeVisible()
+    expect(engageMetric).toHaveClass('capacity-metric', 'capacity-over')
+    expect(within(engageMetric).getByText('超出 1 项')).toBeVisible()
+  })
+
+  it('keeps capacity metrics neutral below their limits', async () => {
+    saveCapacityWorkspace(1, 1)
+    const user = userEvent.setup()
+    render(<App />)
+    await user.click(screen.getByRole('button', { name: '洞察' }))
+
+    const focusMetric = screen.getByText('正在 Focus').closest('div')!
+    const engageMetric = screen.getByText('正在 Engage').closest('div')!
+    expect(focusMetric).toHaveClass('capacity-metric', 'capacity-normal')
+    expect(engageMetric).toHaveClass('capacity-metric', 'capacity-normal')
+    expect(screen.queryByText('已达上限')).toBeNull()
+    expect(screen.queryByText(/超出 \d+ 项/)).toBeNull()
   })
 
   it('opens the correctly scoped topic dialog from the recent list, donut sector, and legend by keyboard', async () => {
