@@ -178,6 +178,71 @@ describe('workspace store', () => {
     expect(JSON.parse(await fs.readFile(store.paths.workspace, 'utf8'))).toEqual(readableBackup)
   })
 
+  test('does not restore permanently removed cards when recovering from backup', async () => {
+    const directory = await temporaryDirectory()
+    const store = createWorkspaceStore({ directory })
+    const withCard = {
+      ...workspace('keep'),
+      items: {
+        keep: { title: 'keep' },
+        gone: { title: 'gone' },
+      },
+      events: [
+        { type: 'note', itemId: 'keep' },
+        { type: 'note', itemId: 'gone' },
+        { type: 'spawn', itemId: 'keep', childItemId: 'gone' },
+      ],
+      relations: [{ parentItemId: 'keep', childItemId: 'gone' }],
+      exportReceipts: [{ itemId: 'gone' }, { itemId: 'keep' }],
+      reviews: [{
+        adjustments: [{
+          promotions: ['gone', 'keep'],
+          displacements: [{ itemId: 'gone' }, { itemId: 'keep' }],
+        }],
+        comboDrafts: {
+          radar_focus: {
+            promotions: [{ itemId: 'gone' }, { itemId: 'keep' }],
+            displacements: [{ itemId: 'gone' }],
+            extraIds: ['gone', 'keep'],
+          },
+        },
+      }],
+    }
+    const withoutCard = {
+      ...withCard,
+      items: { keep: { title: 'keep' } },
+      events: [{ type: 'note', itemId: 'keep' }],
+      relations: [],
+      exportReceipts: [{ itemId: 'keep' }],
+      reviews: [{
+        adjustments: [{
+          promotions: ['keep'],
+          displacements: [{ itemId: 'keep' }],
+        }],
+        comboDrafts: {
+          radar_focus: {
+            promotions: [{ itemId: 'keep' }],
+            displacements: [],
+            extraIds: ['keep'],
+          },
+        },
+      }],
+    }
+
+    await store.save(withCard)
+    await store.save(withoutCard)
+    await fs.writeFile(store.paths.workspace, '{broken', 'utf8')
+
+    const recovered = await store.read()
+    expect(recovered.status).toBe('recovered')
+    expect(recovered.workspace?.items.gone).toBeUndefined()
+    expect(recovered.workspace?.items.keep).toEqual({ title: 'keep' })
+    expect(recovered.workspace?.events.some((event: { itemId?: string; childItemId?: string }) =>
+      event.itemId === 'gone' || event.childItemId === 'gone')).toBe(false)
+    expect(recovered.workspace?.relations).toEqual([])
+    expect(recovered.workspace?.exportReceipts).toEqual([{ itemId: 'keep' }])
+  })
+
   test('does not replace a newer workspace when reading it fails for an I/O reason', async () => {
     const directory = await temporaryDirectory()
     const originalStore = createWorkspaceStore({ directory })

@@ -21,6 +21,55 @@ function isObject(value) {
   return value !== null && typeof value === 'object' && !Array.isArray(value)
 }
 
+function purgeItemFromWorkspace(workspace, itemId) {
+  const { [itemId]: removed, ...items } = workspace.items
+  void removed
+  const referencesItem = (event) =>
+    event.itemId === itemId || ('childItemId' in event && event.childItemId === itemId)
+
+  return {
+    ...workspace,
+    items,
+    events: workspace.events.filter((event) => !referencesItem(event)),
+    relations: workspace.relations.filter((relation) =>
+      relation.parentItemId !== itemId && relation.childItemId !== itemId),
+    exportReceipts: workspace.exportReceipts.filter((receipt) => receipt.itemId !== itemId),
+    reviews: workspace.reviews.map((review) => ({
+      ...review,
+      adjustments: Array.isArray(review.adjustments)
+        ? review.adjustments.map((adjustment) => ({
+          ...adjustment,
+          promotions: Array.isArray(adjustment.promotions)
+            ? adjustment.promotions.filter((id) => id !== itemId)
+            : adjustment.promotions,
+          displacements: Array.isArray(adjustment.displacements)
+            ? adjustment.displacements.filter((entry) => entry?.itemId !== itemId)
+            : adjustment.displacements,
+        }))
+        : review.adjustments,
+      comboDrafts: isObject(review.comboDrafts)
+        ? Object.fromEntries(
+          Object.entries(review.comboDrafts).map(([kind, draft]) => {
+            if (!isObject(draft)) return [kind, draft]
+            return [kind, {
+              ...draft,
+              promotions: Array.isArray(draft.promotions)
+                ? draft.promotions.filter((entry) => entry?.itemId !== itemId)
+                : draft.promotions,
+              displacements: Array.isArray(draft.displacements)
+                ? draft.displacements.filter((entry) => entry?.itemId !== itemId)
+                : draft.displacements,
+              extraIds: Array.isArray(draft.extraIds)
+                ? draft.extraIds.filter((id) => id !== itemId)
+                : draft.extraIds,
+            }]
+          }),
+        )
+        : review.comboDrafts,
+    })),
+  }
+}
+
 export function validateWorkspace(value) {
   if (
     !isObject(value) ||
@@ -113,6 +162,34 @@ export function createWorkspaceStore(options = {}) {
     }
   }
 
+  async function scrubRemovedItemsFromBackup(savedWorkspace) {
+    let backup
+    try {
+      backup = await readValidated(paths.backup)
+    } catch (error) {
+      if (isMissing(error) || error instanceof WorkspaceValidationError) return
+      throw error
+    }
+
+    const removedIds = Object.keys(backup.items).filter((itemId) => !(itemId in savedWorkspace.items))
+    if (removedIds.length === 0) return
+
+    let next = backup
+    for (const itemId of removedIds) {
+      next = purgeItemFromWorkspace(next, itemId)
+    }
+
+    let temporary = temporaryPath('workspace.backup')
+    try {
+      await writeTemporary(temporary, next)
+      await readValidated(temporary)
+      await fileSystem.rename(temporary, paths.backup)
+      temporary = undefined
+    } finally {
+      if (temporary) await removeTemporary(temporary)
+    }
+  }
+
   async function save(workspace) {
     validateWorkspace(workspace)
     JSON.stringify(workspace)
@@ -140,6 +217,7 @@ export function createWorkspaceStore(options = {}) {
 
       await fileSystem.rename(temporary, paths.workspace)
       temporary = undefined
+      await scrubRemovedItemsFromBackup(workspace)
       return await readValidated(paths.workspace)
     } finally {
       if (temporary) await removeTemporary(temporary)
