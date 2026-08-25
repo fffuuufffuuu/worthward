@@ -15,9 +15,23 @@ if (target.protocol !== 'http:' || target.hostname !== '127.0.0.1' || target.por
   })
   const page = await browser.newPage({ viewport: { width: 1440, height: 900 } })
   const requests = []
-  page.on('request', (request) => requests.push(request.url()))
+  const assertNoApiRequests = () => {
+    const apiRequest = requests.find((request) => request.pathname === '/api' || request.pathname.startsWith('/api/'))
+    if (apiRequest) throw new Error(`Capacity alert acceptance must not call /api: ${apiRequest.url}`)
+  }
+  await page.route('**/*', async (route) => {
+    const requestUrl = new URL(route.request().url())
+    const request = { url: requestUrl.href, pathname: requestUrl.pathname }
+    requests.push(request)
+    if (request.pathname === '/api' || request.pathname.startsWith('/api/')) {
+      await route.abort('blockedbyclient')
+      return
+    }
+    await route.continue()
+  })
   await page.goto(url)
   await page.waitForLoadState('networkidle')
+  assertNoApiRequests()
   await page.waitForFunction(() => localStorage.getItem('attention-workbench:v1') !== null)
   await page.evaluate(() => {
     const key = 'attention-workbench:v1'
@@ -64,8 +78,7 @@ if (target.protocol !== 'http:' || target.hostname !== '127.0.0.1' || target.por
     throw new Error('Capacity alert mobile layout overflow')
   }
   await page.screenshot({ path: path.join(__dirname, 'capacity-alerts-mobile.png'), fullPage: true })
-  const apiRequest = requests.find((requestUrl) => new URL(requestUrl).pathname.startsWith('/api'))
-  if (apiRequest) throw new Error(`Capacity alert acceptance must not call /api: ${apiRequest}`)
+  assertNoApiRequests()
   await browser.close()
   console.log('CAPACITY_ALERT_ACCEPTANCE=PASS')
 })().catch((error) => { console.error(error); process.exit(1) })
