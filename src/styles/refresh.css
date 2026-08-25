@@ -43,6 +43,11 @@
 .kind-badge, .card-kind { flex: none; }
 .topic-list, .topic-line { color: var(--muted); }
 
+@media (max-width: 1020px) {
+  .board-heading { grid-template-columns: 1fr; }
+  .board-filters { width: 100%; align-self: stretch; }
+}
+
 @media (max-width: 800px) {
   .topbar { min-height: 70px; padding: 0 16px; }
   .workspace-main { padding: 30px 16px 90px; }
