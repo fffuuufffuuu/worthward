@@ -51,7 +51,7 @@ describe('WeeklyReviewOverlay', () => {
     render(<Harness initial={started.state} reviewId={started.reviewId} suggestReviewPlan={suggestReviewPlan} />)
 
     expect(screen.getByLabelText('近期关注方向')).toBeVisible()
-    expect(screen.getByPlaceholderText('说说接下来一周真正想盯住的方向。')).toBeVisible()
+    expect(screen.getByPlaceholderText('这里可以填写近阶段感兴趣或想要发展的方向。')).toBeVisible()
     expect(screen.getByText('写出近期关注的方向，推荐卡片会更聚焦。没想好也可留空。')).toBeVisible()
     expect(screen.queryByText(/左侧方向会参与/)).toBeNull()
     expect(screen.getByLabelText('当前容量')).toHaveTextContent('Focus')

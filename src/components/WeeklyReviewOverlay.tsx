@@ -38,7 +38,7 @@ const reviewSteps = [
   ['注意力梳理成果', '对照梳理前后的容量与这次调整，看看哪些事项真正前进了、哪些该停下。'],
 ] as const
 
-const attentionDirectionHint = '说说接下来一周真正想盯住的方向。'
+const attentionDirectionHint = '这里可以填写近阶段感兴趣或想要发展的方向。'
 const attentionDirectionNote = '写出近期关注的方向，推荐卡片会更聚焦。没想好也可留空。'
 
 const comboPaneCopy = {

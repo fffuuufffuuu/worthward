@@ -60,11 +60,19 @@ export function TickTickSettingsCard({
         <label>
           <input
             type="radio"
+            aria-label="CLI"
             name="ticktick-create-mode"
             checked={createMode === 'cli'}
             onChange={() => patch({ tickTickCreateMode: 'cli' })}
           />
           CLI
+          <span className="cli-info">
+            <button type="button" className="cli-info-trigger" aria-label="了解滴答清单 CLI" aria-describedby="dida-cli-tooltip">i</button>
+            <span className="cli-info-tooltip" id="dida-cli-tooltip" role="tooltip">
+              DidaCLI 是独立开源的本机命令行工具，可用于读取和创建滴答清单任务，并非滴答清单官方产品。
+              <a href="https://github.com/DeliciousBuding/dida-cli" target="_blank" rel="noopener noreferrer">查看 DidaCLI 项目说明</a>
+            </span>
+          </span>
         </label>
       </fieldset>
       {createMode === 'cli' ? (

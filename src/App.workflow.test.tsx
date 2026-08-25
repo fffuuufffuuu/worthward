@@ -136,7 +136,7 @@ describe('attention workflow', () => {
     expect(screen.getByText('探索 / 创造')).toBeVisible()
     await user.click(screen.getByRole('button', { name: '开始注意力梳理' }))
     expect(screen.getByRole('heading', { name: /哪些值得我关注/ })).toBeVisible()
-    expect(screen.getByPlaceholderText('说说接下来一周真正想盯住的方向。')).toBeVisible()
+    expect(screen.getByPlaceholderText('这里可以填写近阶段感兴趣或想要发展的方向。')).toBeVisible()
     expect(screen.getByText('写出近期关注的方向，推荐卡片会更聚焦。没想好也可留空。')).toBeVisible()
     await user.click(screen.getByRole('button', { name: '下一步' }))
     expect(screen.getByText('2 / 6')).toBeVisible()
