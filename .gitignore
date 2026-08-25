@@ -7,3 +7,4 @@ release/
 *.log
 *.tsbuildinfo
 所向.exe
+.worktrees/
