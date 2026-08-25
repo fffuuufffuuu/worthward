@@ -376,9 +376,18 @@ describe('local server', () => {
       schemaVersion: 1,
       items: {
         other: {
-          title: '别人',
+          id: 'other',
+          title: '探索中的卡片',
           description: '其他卡片的私人说明',
+          board: 'explore',
+          category: '主题 / 问题',
           topics: ['AI 与智能体', '注意力与个人系统'],
+          stage: 'radar',
+          capturedAt: '2026-08-23T00:00:00.000Z',
+          stageEnteredAt: '2026-08-23T00:00:00.000Z',
+          lastTouchedAt: '2026-08-23T00:00:00.000Z',
+          lastProgressAt: null,
+          version: 1,
         },
       },
       events: [],
@@ -408,10 +417,14 @@ describe('local server', () => {
       }),
     })
     const body = await response.text()
+    const sent = JSON.stringify(captured.messages)
     expect(response.status).toBe(200)
     expect(body).not.toContain('sk-live-should-not-leak')
     expect(body).not.toContain('其他卡片的私人说明')
-    expect(JSON.stringify(captured.messages)).not.toContain('其他卡片的私人说明')
+    expect(sent).toContain('AI 与智能体')
+    expect(sent).toContain('topicsSharedAcrossBoards')
+    expect(sent).not.toContain('其他卡片的私人说明')
+    expect(sent).not.toContain('sk-live-should-not-leak')
     expect(JSON.parse(body)).toMatchObject({
       ok: true,
       existing: [{ name: 'AI 与智能体' }],
