@@ -382,7 +382,7 @@ describe('attention workbench interface', () => {
   })
 
   it('distinguishes full and over capacity in insight metrics', async () => {
-    saveCapacityWorkspace(2, 3)
+    saveCapacityWorkspace(2, 4)
     const user = userEvent.setup()
     render(<App />)
     await user.click(screen.getByRole('button', { name: '洞察' }))
@@ -392,7 +392,7 @@ describe('attention workbench interface', () => {
     expect(focusMetric).toHaveClass('capacity-metric', 'capacity-full')
     expect(within(focusMetric).getByText('已达上限')).toBeVisible()
     expect(engageMetric).toHaveClass('capacity-metric', 'capacity-over')
-    expect(within(engageMetric).getByText('超出 1 项')).toBeVisible()
+    expect(within(engageMetric).getByText('超出 2 项')).toBeVisible()
   })
 
   it('keeps capacity metrics neutral below their limits', async () => {

@@ -3,6 +3,10 @@ const { chromium } = require('C:/Users/sheng/.cache/codex-runtimes/codex-primary
 
 const url = process.env.WORTHWARD_URL
 if (!url) throw new Error('WORTHWARD_URL is required for isolated capacity alert acceptance')
+const target = new URL(url)
+if (target.protocol !== 'http:' || target.hostname !== '127.0.0.1' || target.port !== '4174') {
+  throw new Error('WORTHWARD_URL must use http://127.0.0.1:4174 for isolated capacity alert acceptance')
+}
 
 ;(async () => {
   const browser = await chromium.launch({
@@ -10,6 +14,8 @@ if (!url) throw new Error('WORTHWARD_URL is required for isolated capacity alert
     executablePath: 'C:/Program Files/Google/Chrome/Application/chrome.exe',
   })
   const page = await browser.newPage({ viewport: { width: 1440, height: 900 } })
+  const requests = []
+  page.on('request', (request) => requests.push(request.url()))
   await page.goto(url)
   await page.waitForLoadState('networkidle')
   await page.waitForFunction(() => localStorage.getItem('attention-workbench:v1') !== null)
@@ -58,6 +64,8 @@ if (!url) throw new Error('WORTHWARD_URL is required for isolated capacity alert
     throw new Error('Capacity alert mobile layout overflow')
   }
   await page.screenshot({ path: path.join(__dirname, 'capacity-alerts-mobile.png'), fullPage: true })
+  const apiRequest = requests.find((requestUrl) => new URL(requestUrl).pathname.startsWith('/api'))
+  if (apiRequest) throw new Error(`Capacity alert acceptance must not call /api: ${apiRequest}`)
   await browser.close()
   console.log('CAPACITY_ALERT_ACCEPTANCE=PASS')
 })().catch((error) => { console.error(error); process.exit(1) })
