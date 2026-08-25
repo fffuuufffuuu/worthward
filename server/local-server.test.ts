@@ -423,7 +423,9 @@ describe('local server', () => {
     expect(body).not.toContain('其他卡片的私人说明')
     expect(sent).toContain('AI 与智能体')
     expect(sent).toContain('topicsSharedAcrossBoards')
+    expect(sent).toContain('Prefer reusing an existing topic for synonymous or near-equivalent concepts.')
     expect(sent).not.toContain('其他卡片的私人说明')
+    expect(sent).not.toContain('探索中的卡片')
     expect(sent).not.toContain('sk-live-should-not-leak')
     expect(JSON.parse(body)).toMatchObject({
       ok: true,

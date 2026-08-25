@@ -170,6 +170,7 @@ export function buildAutoTagMessages(card, catalog) {
         'Reply with JSON only: {"existing":[{"name":"","reason":""}],"proposed":[{"name":"","reason":""}]}',
         'existing names MUST be copied from existingTopics. proposed names are new reusable themes, not task titles.',
         'existingTopics is shared by explore and create cards. Board never limits topic reuse.',
+        'Prefer reusing an existing topic for synonymous or near-equivalent concepts.',
         'Do not change board or category. Empty arrays are allowed.',
       ].join(' '),
     },
