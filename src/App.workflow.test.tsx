@@ -167,4 +167,58 @@ describe('attention workflow', () => {
 
     expect(screen.getByText('已恢复到 Radar')).toBeVisible()
   })
+
+  it('permanently deletes an archived card from its detail drawer after confirmation', async () => {
+    const user = userEvent.setup()
+    render(<App />)
+    await capture('详情永久删除')
+    await user.click(screen.getByRole('button', { name: '打开卡片：详情永久删除' }))
+    await user.click(screen.getByRole('button', { name: '停止关注' }))
+    await user.click(screen.getByRole('button', { name: '确认停止关注' }))
+    await user.click(screen.getByRole('button', { name: '打开归档' }))
+    await user.click(screen.getByRole('button', { name: '打开卡片：详情永久删除' }))
+
+    await user.click(screen.getByRole('button', { name: '永久删除' }))
+    expect(screen.getByRole('heading', { name: '永久删除卡片' })).toBeVisible()
+    await user.click(screen.getByRole('button', { name: '确认永久删除' }))
+
+    expect(screen.queryByRole('button', { name: '打开卡片：详情永久删除' })).toBeNull()
+    expect(screen.queryByRole('dialog', { name: '详情永久删除' })).toBeNull()
+    expect(screen.getByText('已永久删除')).toBeVisible()
+  })
+
+  it('permanently deletes an archived card from its list icon after confirmation', async () => {
+    const user = userEvent.setup()
+    render(<App />)
+    await capture('准备永久删除')
+    await user.click(screen.getByRole('button', { name: '打开卡片：准备永久删除' }))
+    await user.click(screen.getByRole('button', { name: '停止关注' }))
+    await user.click(screen.getByRole('button', { name: '确认停止关注' }))
+    await user.click(screen.getByRole('button', { name: '打开归档' }))
+
+    await user.click(screen.getByRole('button', { name: '永久删除卡片：准备永久删除' }))
+    const confirmation = screen.getByRole('dialog', { name: '永久删除卡片' })
+    expect(within(confirmation).getByRole('heading', { name: '永久删除卡片' })).toBeVisible()
+    expect(within(confirmation).getByText(/准备永久删除/)).toBeVisible()
+    expect(within(confirmation).getByText(/无法恢复/)).toBeVisible()
+    await user.click(screen.getByRole('button', { name: '确认永久删除' }))
+
+    expect(screen.queryByRole('button', { name: '打开卡片：准备永久删除' })).toBeNull()
+    expect(screen.getByText('已永久删除')).toBeVisible()
+  })
+
+  it('keeps an archived card when permanent deletion is cancelled', async () => {
+    const user = userEvent.setup()
+    render(<App />)
+    await capture('取消永久删除')
+    await user.click(screen.getByRole('button', { name: '打开卡片：取消永久删除' }))
+    await user.click(screen.getByRole('button', { name: '停止关注' }))
+    await user.click(screen.getByRole('button', { name: '确认停止关注' }))
+    await user.click(screen.getByRole('button', { name: '打开归档' }))
+    await user.click(screen.getByRole('button', { name: '永久删除卡片：取消永久删除' }))
+    await user.click(screen.getByRole('button', { name: '取消' }))
+
+    expect(screen.queryByRole('heading', { name: '永久删除卡片' })).toBeNull()
+    expect(screen.getByRole('button', { name: '打开卡片：取消永久删除' })).toBeVisible()
+  })
 })

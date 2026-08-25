@@ -35,6 +35,7 @@ import type { ActiveStage, AttentionItem, Board, Stage, TickTickExportReceipt, W
 import {
   archiveItem,
   captureItem,
+  deleteArchivedItem,
   moveItem,
   restoreItem,
   setWipLimit,
@@ -274,7 +275,7 @@ function BoardColumn({ stage, items, categories, onOpen }: { stage: typeof activ
   </section>
 }
 
-function DetailDrawer({ item, categories, receipt, onClose, onSave, onMove, onAdvance, onStop, onRestore, onSpawn, onOpenPlan, aiClient, onOpenSettings }: {
+function DetailDrawer({ item, categories, receipt, onClose, onSave, onMove, onAdvance, onStop, onRestore, onDelete, onSpawn, onOpenPlan, aiClient, onOpenSettings }: {
   item: AttentionItem
   categories: WorkspaceSettings['categories']
   receipt?: TickTickExportReceipt
@@ -284,6 +285,7 @@ function DetailDrawer({ item, categories, receipt, onClose, onSave, onMove, onAd
   onAdvance: () => void
   onStop: () => void
   onRestore: () => void
+  onDelete: () => void
   onSpawn: () => void
   onOpenPlan?: () => void
   aiClient: AiClient
@@ -319,7 +321,7 @@ function DetailDrawer({ item, categories, receipt, onClose, onSave, onMove, onAd
   }
   return <div className="drawer-backdrop" role="presentation" onClick={onClose}><aside className="drawer" role="dialog" aria-modal="true" aria-labelledby="detail-title" onClick={(event) => event.stopPropagation()}>
     <div className="dialog-heading"><div><p className="eyebrow">{stageLabels[item.stage].toUpperCase()}</p><h2 id="detail-title">{item.title}</h2></div><button className="icon-button" onClick={onClose} aria-label="关闭卡片">×</button></div>
-    {item.stage === 'archive' ? <button className="primary-button full-button" onClick={onRestore}>恢复到 Radar</button> : <div className="stage-actions"><label className="stage-picker">移动到<select aria-label="移动到" value={item.stage} onChange={(event) => onMove(event.target.value as ActiveStage)}>{activeStages.map((stage) => <option key={stage.id} value={stage.id}>{stage.label}</option>)}</select></label><button className="primary-button next-stage-button" onClick={onAdvance}>{nextStageLabels[item.stage]}</button></div>}
+    {item.stage !== 'archive' && <div className="stage-actions"><label className="stage-picker">移动到<select aria-label="移动到" value={item.stage} onChange={(event) => onMove(event.target.value as ActiveStage)}>{activeStages.map((stage) => <option key={stage.id} value={stage.id}>{stage.label}</option>)}</select></label><button className="primary-button next-stage-button" onClick={onAdvance}>{nextStageLabels[item.stage]}</button></div>}
     {item.stage === 'engage' && onOpenPlan && <button className="secondary-button full-button" onClick={onOpenPlan}>执行计划</button>}
     {receipt && <p className="handoff-status"><span />{describeReceipt(receipt)}</p>}
     <section className="detail-section"><div className="detail-section-heading"><div><p className="eyebrow">CARD / INFO</p><h3>卡片信息</h3></div>{!editingInfo && <button className="text-button" onClick={beginInfoEditing}>编辑信息</button>}</div>
@@ -333,7 +335,7 @@ function DetailDrawer({ item, categories, receipt, onClose, onSave, onMove, onAd
       {!editingDescription ? <article className="markdown-preview"><ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeSanitize]}>{item.description || '*还没有说明。*'}</ReactMarkdown></article> : <div className="inline-editor"><label>说明（支持 Markdown）<textarea autoFocus value={description} onChange={(event) => setDescription(event.target.value)} rows={12} /></label><div className="inline-editor-actions"><button className="secondary-button" onClick={() => { setDescription(item.description); setEditingDescription(false) }}>取消编辑说明</button><button className="primary-button" onClick={() => { onSave({ title: item.title, description, board: item.board, category: item.category, topics: item.topics }); setEditingDescription(false) }}>保存说明</button></div></div>}
     </section>
     <div className="item-meta"><span>入库 {new Date(item.capturedAt).toLocaleDateString('zh-CN')}</span><span>进入当前阶段 {new Date(item.stageEnteredAt).toLocaleDateString('zh-CN')}</span></div>
-    <div className="drawer-footer">{item.stage !== 'archive' && <><button className="text-button danger-text" onClick={onStop}>停止关注</button><button className="text-button" onClick={onSpawn}>由此新建卡片</button></>}</div>
+    <div className="drawer-footer">{item.stage === 'archive' ? <><button className="danger-button" onClick={onDelete}>永久删除</button><button className="primary-button" onClick={onRestore}>恢复到 Radar</button></> : <><button className="text-button danger-text" onClick={onStop}>停止关注</button><button className="text-button" onClick={onSpawn}>由此新建卡片</button></>}</div>
   </aside></div>
 }
 
@@ -416,8 +418,8 @@ function InsightPage({ workspace, onStartReview, onOpenItem }: {
   </main>
 }
 
-function ArchivePage({ items, onOpen }: { items: AttentionItem[]; onOpen: (item: AttentionItem) => void }) {
-  return <main className="workspace-main"><section className="workspace-heading"><div><p className="eyebrow">ARCHIVE / MEMORY</p><h1>归档</h1></div><p>这里保留历史与停止的决定，不再占用当前注意力。</p></section><section className="archive-grid">{items.length ? items.map((item) => <button key={item.id} className="archive-row" onClick={() => onOpen(item)} aria-label={`打开卡片：${item.title}`}><span>{item.board === 'explore' ? '探索' : '创造'}</span><strong>{item.title}</strong><small>{new Date(item.lastTouchedAt).toLocaleDateString('zh-CN')}</small></button>) : <p className="empty-state">归档还是空的。</p>}</section></main>
+function ArchivePage({ items, onOpen, onDelete }: { items: AttentionItem[]; onOpen: (item: AttentionItem) => void; onDelete: (item: AttentionItem) => void }) {
+  return <main className="workspace-main"><section className="workspace-heading"><div><p className="eyebrow">ARCHIVE / MEMORY</p><h1>归档</h1></div><p>这里保留历史与停止的决定，不再占用当前注意力。</p></section><section className="archive-grid">{items.length ? items.map((item) => <article key={item.id} className="archive-row"><button type="button" className="archive-open" onClick={() => onOpen(item)} aria-label={`打开卡片：${item.title}`}><span>{item.board === 'explore' ? '探索' : '创造'}</span><strong>{item.title}</strong><small>{new Date(item.lastTouchedAt).toLocaleDateString('zh-CN')}</small></button><button type="button" className="archive-delete" aria-label={`永久删除卡片：${item.title}`} onClick={() => onDelete(item)}><span aria-hidden="true">⌫</span></button></article>) : <p className="empty-state">归档还是空的。</p>}</section></main>
 }
 
 function SettingsPage({ workspace, onChange, aiClient, tickTickCli }: { workspace: WorkspaceState; onChange: (state: WorkspaceState) => void; aiClient: AiClient; tickTickCli: TickTickCliClient }) {
@@ -465,6 +467,7 @@ export default function App({
   const [pendingEngageId, setPendingEngageId] = useState<string | null>(null)
   const [planItemId, setPlanItemId] = useState<string | null>(null)
   const [pendingStopId, setPendingStopId] = useState<string | null>(null)
+  const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null)
   const [wipBlocked, setWipBlocked] = useState<{ itemId: string; target: ActiveStage; current: number; limit: number } | null>(null)
   const [reviewId, setReviewId] = useState<string | null>(null)
   const [toast, setToast] = useState('')
@@ -518,6 +521,7 @@ export default function App({
   const selectedReceipt = selectedId ? findActiveTickTickReceipt(workspace, selectedId) : undefined
   const pendingEngageItem = pendingEngageId ? workspace.items[pendingEngageId] : undefined
   const planItem = planItemId ? workspace.items[planItemId] : undefined
+  const pendingDeleteItem = pendingDeleteId ? workspace.items[pendingDeleteId] : undefined
   const engageItems = allItems.filter((entry) => entry.stage === 'engage')
   const focusCount = allItems.filter((item) => item.stage === 'focus').length
   const engageCount = engageItems.length
@@ -583,6 +587,15 @@ export default function App({
     else executeMove(itemId, target)
   }
 
+  function confirmPermanentDelete() {
+    if (!workspace || !pendingDeleteId) return
+    const result = deleteArchivedItem(workspace, pendingDeleteId)
+    setPendingDeleteId(null)
+    if (!result.ok) return
+    setWorkspace(result.state)
+    if (selectedId === pendingDeleteId) setSelectedId(null)
+    setToast('已永久删除')
+  }
   function onDragEnd(event: DragEndEvent) {
     const target = event.over?.id as ActiveStage | undefined
     if (target && activeStages.some((stage) => stage.id === target)) requestMove(String(event.active.id), target)
@@ -612,15 +625,16 @@ export default function App({
 
     {(view === 'explore' || view === 'create') && <main id="top" className="workspace-main"><section className="workspace-heading board-heading"><div><p className="eyebrow">{board === 'explore' ? 'EXPLORE' : 'CREATE'} / NOW</p><h1>{board === 'explore' ? '我渴望了解什么？' : '我想要创造什么？'}</h1></div><BoardFilters board={board} categories={workspace.settings.categories} topics={boardTopics} selectedCategories={currentFilters.categories} selectedTopics={currentFilters.topics} resultCount={boardItems.length} totalCount={boardSourceItems.length} onChangeCategories={(values) => updateBoardFilter('categories', values)} onChangeTopics={(values) => updateBoardFilter('topics', values)} /></section><DndContext sensors={sensors} onDragEnd={onDragEnd}><div className="board-grid">{activeStages.map((stage) => <BoardColumn key={stage.id} stage={stage} items={boardItems.filter((item) => item.stage === stage.id)} categories={workspace.settings.categories} onOpen={(item) => setSelectedId(item.id)} />)}</div></DndContext></main>}
     {view === 'insights' && <InsightPage workspace={workspace} onStartReview={() => { const started = startWeeklyReview(workspace); setWorkspace(started.state); setReviewId(started.reviewId) }} onOpenItem={(item) => setSelectedId(item.id)} />}
-    {view === 'archive' && <ArchivePage items={visibleItems.filter((item) => item.stage === 'archive')} onOpen={(item) => setSelectedId(item.id)} />}
+    {view === 'archive' && <ArchivePage items={visibleItems.filter((item) => item.stage === 'archive')} onOpen={(item) => setSelectedId(item.id)} onDelete={(item) => setPendingDeleteId(item.id)} />}
     {view === 'settings' && <SettingsPage workspace={workspace} onChange={setWorkspace} aiClient={aiClient} tickTickCli={tickTickCli} />}
     <AppFooter />
 
     {captureOpen && <CaptureDialog board={board} categories={workspace.settings.categories} onClose={() => setCaptureOpen(false)} onSave={(input) => { const result = captureItem(workspace, input); setWorkspace(result.state); setView(input.board); setCaptureOpen(false) }} aiClient={aiClient} onOpenSettings={() => { setCaptureOpen(false); setView('settings') }} />}
-    {selectedItem && <DetailDrawer key={selectedItem.id} item={selectedItem} categories={workspace.settings.categories} receipt={selectedReceipt} onClose={() => setSelectedId(null)} onSave={(patch) => { setWorkspace(updateItem(workspace, selectedItem.id, patch).state); if (!fileMode) setToast('卡片已保存') }} onMove={(stage) => requestMove(selectedItem.id, stage)} onAdvance={() => { if (selectedItem.stage === 'archive') return; const target = nextStageFor(selectedItem.stage); if (target === 'archive') { setWorkspace(archiveItem(workspace, selectedItem.id, 'archive').state); setSelectedId(null); setToast('已完成并归档') } else requestMove(selectedItem.id, target) }} onStop={() => setPendingStopId(selectedItem.id)} onRestore={() => { const result = restoreItem(workspace, selectedItem.id, 'radar'); setWorkspace(result.state); setSelectedId(null); setView(selectedItem.board); setToast('已恢复到 Radar') }} onSpawn={() => { const result = spawnItem(workspace, selectedItem.id, { title: `${selectedItem.title} — 新线索`, board: selectedItem.board, topics: selectedItem.topics }); setWorkspace(result.state); setSelectedId(result.itemId); setToast('已生成一张 Radar 卡片') }} onOpenPlan={selectedItem.stage === 'engage' ? () => setPlanItemId(selectedItem.id) : undefined} aiClient={aiClient} onOpenSettings={() => { setSelectedId(null); setView('settings') }} />}
+    {selectedItem && <DetailDrawer key={selectedItem.id} item={selectedItem} categories={workspace.settings.categories} receipt={selectedReceipt} onClose={() => setSelectedId(null)} onSave={(patch) => { setWorkspace(updateItem(workspace, selectedItem.id, patch).state); if (!fileMode) setToast('卡片已保存') }} onMove={(stage) => requestMove(selectedItem.id, stage)} onAdvance={() => { if (selectedItem.stage === 'archive') return; const target = nextStageFor(selectedItem.stage); if (target === 'archive') { setWorkspace(archiveItem(workspace, selectedItem.id, 'archive').state); setSelectedId(null); setToast('已完成并归档') } else requestMove(selectedItem.id, target) }} onStop={() => setPendingStopId(selectedItem.id)} onRestore={() => { const result = restoreItem(workspace, selectedItem.id, 'radar'); setWorkspace(result.state); setSelectedId(null); setView(selectedItem.board); setToast('已恢复到 Radar') }} onDelete={() => setPendingDeleteId(selectedItem.id)} onSpawn={() => { const result = spawnItem(workspace, selectedItem.id, { title: `${selectedItem.title} — 新线索`, board: selectedItem.board, topics: selectedItem.topics }); setWorkspace(result.state); setSelectedId(result.itemId); setToast('已生成一张 Radar 卡片') }} onOpenPlan={selectedItem.stage === 'engage' ? () => setPlanItemId(selectedItem.id) : undefined} aiClient={aiClient} onOpenSettings={() => { setSelectedId(null); setView('settings') }} />}
     {pendingEngageItem && <EngageCommitDialog item={pendingEngageItem} engageItems={engageItems} engageCount={engageCount} engageLimit={workspace.settings.engageWipLimit} focusCount={focusCount} focusLimit={workspace.settings.focusWipLimit} onClose={() => setPendingEngageId(null)} onConfirm={(options) => { const itemId = pendingEngageItem.id; setPendingEngageId(null); if (executeMove(itemId, 'engage', options)) setPlanItemId(itemId) }} />}
     {planItem && <EngagePlanDialog item={planItem} listName={workspace.settings.tickTickListName} hasReceipt={Boolean(findActiveTickTickReceipt(workspace, planItem.id))} createMode={workspace.settings.tickTickCreateMode === 'cli' ? 'cli' : 'deeplink'} aiClient={aiClient} onOpenSettings={() => { setPlanItemId(null); setView('settings') }} onClose={() => setPlanItemId(null)} onCreateMain={(plan) => commitTickTick(planItem.id, 'main', plan)} onCreateTree={(plan) => commitTickTick(planItem.id, 'tree', plan)} />}
     {pendingStopId && <ConfirmDialog title="停止关注" confirmLabel="确认停止关注" tone="danger" onClose={() => setPendingStopId(null)} onConfirm={() => { setWorkspace(archiveItem(workspace, pendingStopId, 'drop').state); setSelectedId(null); setPendingStopId(null); setToast('已停止关注并移入归档') }}><p>卡片会移入归档并保留历史，之后仍可恢复。</p></ConfirmDialog>}
+    {pendingDeleteItem && <ConfirmDialog title="永久删除卡片" confirmLabel="确认永久删除" tone="danger" onClose={() => setPendingDeleteId(null)} onConfirm={confirmPermanentDelete}><p><strong>{pendingDeleteItem.title}</strong> 将被永久删除。永久删除后无法恢复。</p></ConfirmDialog>}
     {wipBlocked && <ConfirmDialog title={`${stageLabels[wipBlocked.target]} 已满`} confirmLabel="仍然移入" onClose={() => setWipBlocked(null)} onConfirm={() => { const pending = wipBlocked; setWipBlocked(null); executeMove(pending.itemId, pending.target, { overrideWip: true }) }}><p>当前已有 {wipBlocked.current}/{wipBlocked.limit} 项。继续会暂时突破你设定的上限。</p></ConfirmDialog>}
     {reviewId && <WeeklyReviewOverlay workspace={workspace} reviewId={reviewId} aiClient={aiClient} onChange={setWorkspace} onClose={() => setReviewId(null)} onOpenItem={(item) => setSelectedId(item.id)} onOpenSettings={() => { setReviewId(null); setView('settings') }} />}
     {toast && <div className="toast" role="status">{toast}</div>}
