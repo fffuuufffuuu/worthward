@@ -2,7 +2,7 @@
   --canvas: #f3f6f5;
   --paper: #ffffff;
   --ink: #173341;
-  --muted: #657983;
+  --muted: #596d76;
   --line: #c9d4d5;
   --navy: #173341;
   --focus: #50c5a7;
@@ -17,8 +17,8 @@
 .brand-logo { width: 40px; height: 40px; }
 .brand-title-row { display: flex; align-items: baseline; gap: 10px; }
 .brand-title-row strong { font-size: 19px; }
-.brand-title-row b { color: rgba(23, 51, 65, .48); font: 700 9px/1 "Cascadia Mono", Consolas, monospace; letter-spacing: .14em; }
-.brand small { margin-top: 4px; font: 700 8px/1 "Cascadia Mono", Consolas, monospace; letter-spacing: .15em; }
+.brand-title-row b { color: #536872; font: 700 9px/1 "Cascadia Mono", Consolas, monospace; letter-spacing: .14em; }
+.brand small { margin-top: 4px; color: #536872; font: 700 8px/1 "Cascadia Mono", Consolas, monospace; letter-spacing: .15em; text-transform: uppercase; }
 .main-nav button.active { color: var(--ink); border-bottom-color: var(--focus); }
 .primary-button { background: var(--navy); }
 .primary-button:hover:not(:disabled) { background: #244b58; }
@@ -53,10 +53,11 @@
 .dialog input, .dialog textarea, .drawer input, .drawer textarea, .drawer select, .settings-page input { border-color: rgba(23, 51, 65, .22); border-radius: 5px; }
 .secondary-button, .utility-button, .icon-button { border-color: rgba(23, 51, 65, .18); }
 .toast { background: var(--navy); }
-.app-footer { width: min(100% - 60px, 1540px); margin: auto auto 0; padding: 24px 0 30px; display: flex; align-items: center; justify-content: space-between; gap: 24px; border-top: 1px solid rgba(23, 51, 65, .13); color: rgba(23, 51, 65, .58); }
+.app-footer { width: min(100% - 60px, 1540px); margin: auto auto 0; padding: 24px 0 30px; display: flex; align-items: center; justify-content: space-between; gap: 24px; border-top: 1px solid rgba(23, 51, 65, .13); color: #536872; }
 .app-footer-brand { display: grid; gap: 3px; }
 .app-footer-brand strong { color: var(--ink); font-family: Georgia, "Songti SC", serif; }
-.app-footer-brand span, .app-footer-meta { font: 700 9px/1.4 "Cascadia Mono", Consolas, monospace; letter-spacing: .1em; }
+.app-footer-brand span, .app-footer-meta { color: #536872; font: 700 9px/1.4 "Cascadia Mono", Consolas, monospace; letter-spacing: .1em; }
+.app-footer-brand span { text-transform: uppercase; }
 .app-footer-meta { display: flex; align-items: center; gap: 14px; }
 .app-footer a { color: var(--ink); text-underline-offset: 3px; }
 
@@ -65,18 +66,20 @@
 @media (max-width: 1020px) {
   .board-heading { grid-template-columns: 1fr; }
   .board-filters { width: 100%; align-self: stretch; }
+  .board-grid { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 12px; }
+  .stage-column { flex: 0 0 min(78vw, 300px); scroll-snap-align: start; }
 }
 
 @media (max-width: 800px) {
-  .topbar { min-height: 70px; padding: 0 16px; }
-  .brand-title-row b { display: none; }
+  .topbar { min-height: 70px; padding: 0 16px; backdrop-filter: none; }
+  .brand-title-row { gap: 7px; }
   .workspace-main { padding: 28px 16px 92px; }
   .workspace-heading, .board-heading { display: flex; align-items: stretch; flex-direction: column; gap: 16px; }
   .workspace-heading { margin-bottom: 24px; }
   .workspace-heading h1 { font-size: 38px; }
   .board-filters { width: 100%; align-self: stretch; }
   .board-grid { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scroll-padding-inline: 0; padding-bottom: 12px; }
-  .stage-column { min-width: min(86vw, 350px); scroll-snap-align: start; }
+  .stage-column { flex-basis: min(86vw, 350px); min-width: min(86vw, 350px); scroll-snap-align: start; }
   .stage-header { top: 70px; }
   .app-footer { width: calc(100% - 32px); padding-bottom: 82px; align-items: flex-start; flex-direction: column; gap: 10px; }
   .app-footer-meta { flex-wrap: wrap; }

@@ -10,6 +10,8 @@ const required = [
   'AI 提出聚焦方向建议，由你确认投入方向。',
   '作者：CashewLab',
   'href="https://github.com/fffuuufffuuu/worthward"',
+  '.footer-github { color: #536872; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }',
+  '.footer-github:hover { color: var(--deep); text-decoration-thickness: 2px; }',
 ]
 const forbidden = [
   '作者：待补充',

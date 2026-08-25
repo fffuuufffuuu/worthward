@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import App from './App'
+import { BRAND } from './brand'
 import { saveWorkspace } from './data/storage'
 import { createInitialWorkspace } from './domain/defaults'
 import type { WorkspaceState } from './domain/types'
@@ -180,7 +181,8 @@ describe('attention workbench interface', () => {
     const brand = screen.getByRole('button', { name: '所向首页' })
     expect(within(brand).getByText('所向')).toBeVisible()
     expect(within(brand).getByText('WORTHWARD')).toBeVisible()
-    expect(within(brand).getByText('ATTENTION, DIRECTED.')).toBeVisible()
+    expect(BRAND.tagline).toBe('Attention, directed.')
+    expect(within(brand).getByText('Attention, directed.')).toBeVisible()
     expect(container.querySelector('.wip-readout')).toBeNull()
 
     const footer = screen.getByRole('contentinfo')
