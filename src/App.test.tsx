@@ -163,6 +163,16 @@ describe('attention workbench interface', () => {
     expect(screen.queryByText(/Reconsider|Reengage|Reactivate|Promote|Demote/)).toBeNull()
   })
 
+  it('keeps the Worthward footer across primary views', async () => {
+    const user = userEvent.setup()
+    render(<App />)
+    for (const name of ['洞察', '打开归档', '打开设置']) {
+      await user.click(screen.getByRole('button', { name }))
+      expect(screen.getByRole('contentinfo')).toBeVisible()
+      expect(within(screen.getByRole('contentinfo')).getByText('CashewLab')).toBeVisible()
+    }
+  })
+
   it('uses the Xiang brand, board questions, category colors, and combined filters', async () => {
     const user = userEvent.setup()
     const { container } = render(<App />)
