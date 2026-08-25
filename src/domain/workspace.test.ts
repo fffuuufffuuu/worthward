@@ -3,6 +3,7 @@ import { createInitialWorkspace } from './defaults'
 import {
   archiveItem,
   captureItem,
+  deleteArchivedItem,
   moveItem,
   restoreItem,
   setWipLimit,
@@ -236,4 +237,79 @@ describe('attention workspace domain', () => {
     })
   })
 
+  it('permanently deletes an archived item and cleans every persisted reference', () => {
+    const parent = withItem('已归档方向')
+    const child = captureItem(parent.state, { title: '保留子卡', board: 'create' }, env())
+    const archived = archiveItem(child.state, parent.itemId, 'archive', undefined, env())
+    const draft = {
+      kind: 'radar_focus' as const,
+      promotions: [
+        { itemId: parent.itemId, evidence: '证据', relation: '关系', risk: '风险', selected: true },
+        { itemId: child.itemId, evidence: '证据', relation: '关系', risk: '风险', selected: true },
+      ],
+      displacements: [
+        { itemId: parent.itemId, to: 'radar' as const, reason: '原因', selected: true },
+        { itemId: child.itemId, to: 'focus' as const, reason: '原因', selected: true },
+      ],
+      summary: '组合建议', analyzedCount: 2, totalCount: 2,
+      extraIds: [parent.itemId, child.itemId],
+    }
+    const state: WorkspaceState = {
+      ...archived.state,
+      events: [
+        ...archived.state.events,
+        { id: 'event-parent', type: 'property_changed', itemId: parent.itemId, occurredAt: '2026-08-21T08:00:00.000Z' },
+        { id: 'event-child-parent', type: 'property_changed', itemId: child.itemId, childItemId: parent.itemId, occurredAt: '2026-08-21T08:00:00.000Z' },
+      ],
+      relations: [
+        { parentItemId: parent.itemId, childItemId: child.itemId, type: 'spawned_from' },
+        { parentItemId: 'keep-parent', childItemId: 'keep-child', type: 'spawned_from' },
+      ],
+      exportReceipts: [
+        { exportId: 'receipt-parent', itemId: parent.itemId, status: 'skipped', createdAt: '2026-08-21T08:00:00.000Z' },
+        { exportId: 'receipt-child', itemId: child.itemId, status: 'skipped', createdAt: '2026-08-21T08:00:00.000Z' },
+      ],
+      reviews: [{
+        id: 'review-1', status: 'completed', step: 7,
+        startedAt: '2026-08-21T08:00:00.000Z', completedAt: '2026-08-21T08:00:00.000Z',
+        startSnapshot: { focus: 0, engage: 0 }, endSnapshot: { focus: 0, engage: 0 },
+        attentionDirection: '清理归档卡片',
+        adjustments: [{
+          kind: 'radar_focus', note: '保留其他调整',
+          promotions: [parent.itemId, child.itemId],
+          displacements: [{ itemId: parent.itemId, to: 'radar' }, { itemId: child.itemId, to: 'focus' }],
+          overrideWip: false, confirmedAt: '2026-08-21T08:00:00.000Z',
+        }],
+        comboDrafts: { radar_focus: draft, focus_engage: { ...draft, kind: 'focus_engage' as const } },
+      }],
+    }
+
+    const result = deleteArchivedItem(state, parent.itemId)
+
+    expect(result.ok).toBe(true)
+    expect(result.state.items[parent.itemId]).toBeUndefined()
+    expect(result.state.items[child.itemId]).toBeDefined()
+    expect(result.state.events.some((event) =>
+      event.itemId === parent.itemId || ('childItemId' in event && event.childItemId === parent.itemId)
+    )).toBe(false)
+    expect(result.state.relations.some((relation) =>
+      relation.parentItemId === parent.itemId || relation.childItemId === parent.itemId
+    )).toBe(false)
+    expect(result.state.exportReceipts.some((receipt) => receipt.itemId === parent.itemId)).toBe(false)
+    expect(result.state.reviews[0].adjustments[0].promotions).not.toContain(parent.itemId)
+    expect(result.state.reviews[0].adjustments[0].displacements).not.toContainEqual(expect.objectContaining({ itemId: parent.itemId }))
+    for (const combo of Object.values(result.state.reviews[0].comboDrafts ?? {})) {
+      expect(combo?.promotions).not.toContainEqual(expect.objectContaining({ itemId: parent.itemId }))
+      expect(combo?.displacements).not.toContainEqual(expect.objectContaining({ itemId: parent.itemId }))
+      expect(combo?.extraIds).not.toContain(parent.itemId)
+    }
+  })
+
+  it('protects an active item from permanent deletion', () => {
+    const captured = withItem('仍在关注')
+    const result = deleteArchivedItem(captured.state, captured.itemId)
+
+    expect(result).toMatchObject({ ok: false, reason: 'not_archived' })
+    expect(result.state).toBe(captured.state)
+  })
 })

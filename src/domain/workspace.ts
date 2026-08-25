@@ -6,6 +6,7 @@ import type {
   DomainEnv,
   MoveOptions,
   MoveResult,
+  ReviewComboDraft,
   Stage,
   TransitionMode,
   WorkspaceEvent,
@@ -209,6 +210,60 @@ export function archiveItem(
     { transitionMode: mode, reason },
     env,
   )
+}
+
+function cleanComboDrafts(
+  comboDrafts: Partial<Record<'radar_focus' | 'focus_engage', ReviewComboDraft>> | undefined,
+  itemId: string,
+): Partial<Record<'radar_focus' | 'focus_engage', ReviewComboDraft>> | undefined {
+  if (!comboDrafts) return undefined
+  const cleaned: Partial<Record<'radar_focus' | 'focus_engage', ReviewComboDraft>> = {}
+  for (const kind of ['radar_focus', 'focus_engage'] as const) {
+    const draft = comboDrafts[kind]
+    if (!draft) continue
+    cleaned[kind] = {
+      ...draft,
+      promotions: draft.promotions.filter((entry) => entry.itemId !== itemId),
+      displacements: draft.displacements.filter((entry) => entry.itemId !== itemId),
+      extraIds: draft.extraIds.filter((id) => id !== itemId),
+    }
+  }
+  return cleaned
+}
+
+export function deleteArchivedItem(
+  state: WorkspaceState,
+  itemId: string,
+): { state: WorkspaceState; ok: boolean; reason?: 'item_not_found' | 'not_archived' } {
+  const item = state.items[itemId]
+  if (!item) return { state, ok: false, reason: 'item_not_found' }
+  if (item.stage !== 'archive') return { state, ok: false, reason: 'not_archived' }
+
+  const { [itemId]: removed, ...items } = state.items
+  void removed
+  const referencesItem = (event: WorkspaceEvent) =>
+    event.itemId === itemId || ('childItemId' in event && event.childItemId === itemId)
+
+  return {
+    ok: true,
+    state: {
+      ...state,
+      items,
+      events: state.events.filter((event) => !referencesItem(event)),
+      relations: state.relations.filter((relation) =>
+        relation.parentItemId !== itemId && relation.childItemId !== itemId),
+      exportReceipts: state.exportReceipts.filter((receipt) => receipt.itemId !== itemId),
+      reviews: state.reviews.map((review) => ({
+        ...review,
+        adjustments: review.adjustments.map((adjustment) => ({
+          ...adjustment,
+          promotions: adjustment.promotions.filter((id) => id !== itemId),
+          displacements: adjustment.displacements.filter((entry) => entry.itemId !== itemId),
+        })),
+        comboDrafts: cleanComboDrafts(review.comboDrafts, itemId),
+      })),
+    },
+  }
 }
 
 export function restoreItem(
