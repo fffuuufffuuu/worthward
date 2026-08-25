@@ -486,6 +486,19 @@ describe('attention workbench interface', () => {
     expect(header).toHaveClass('stage-header')
   })
 
+  it('shows only current board counts in stage headers', () => {
+    const { container } = render(<App />)
+
+    expect(container.querySelector('.wip-readout')).toBeNull()
+    const stages = screen.getAllByRole('region').filter((node) => node.classList.contains('stage-column'))
+    expect(stages).toHaveLength(4)
+    for (const stage of stages) {
+      expect(stage.querySelector('.count-badge')).not.toBeNull()
+    }
+    expect(screen.queryByText(/\d+\s*\/\s*10/)).toBeNull()
+    expect(screen.queryByText(/\d+\s*\/\s*4/)).toBeNull()
+  })
+
   it('waits for the primary file before rendering and does not save the loaded snapshot again', async () => {
     const loaded = createInitialWorkspace()
     let resolveLoad: ((workspace: WorkspaceState) => void) | undefined
