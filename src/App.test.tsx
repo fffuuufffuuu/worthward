@@ -165,10 +165,21 @@ describe('attention workbench interface', () => {
 
   it('uses the Xiang brand, board questions, category colors, and combined filters', async () => {
     const user = userEvent.setup()
-    render(<App />)
+    const { container } = render(<App />)
 
-    expect(screen.getByRole('button', { name: '所向首页' })).toBeVisible()
-    expect(screen.getByText('ATTENTION, DIRECTED.')).toBeVisible()
+    const brand = screen.getByRole('button', { name: '所向首页' })
+    expect(within(brand).getByText('所向')).toBeVisible()
+    expect(within(brand).getByText('WORTHWARD')).toBeVisible()
+    expect(within(brand).getByText('ATTENTION, DIRECTED.')).toBeVisible()
+    expect(container.querySelector('.wip-readout')).toBeNull()
+
+    const footer = screen.getByRole('contentinfo')
+    expect(within(footer).getByText('CashewLab')).toBeVisible()
+    expect(within(footer).getByText('v0.1.0')).toBeVisible()
+    expect(within(footer).getByRole('link', { name: 'GitHub' })).toHaveAttribute(
+      'href',
+      'https://github.com/fffuuufffuuu/worthward',
+    )
     expect(screen.getByRole('heading', { name: '我渴望了解什么？' })).toBeVisible()
 
     await user.click(screen.getByRole('button', { name: '记录想法' }))
