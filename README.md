@@ -92,17 +92,17 @@ npm.cmd run build
 
 ## 干净分发（绿色版）
 
-打包一个可解压即用的绿色版，双击 **所向.exe** 启动，无需对方安装 Node.js：
+打包一个可解压即用的绿色版，双击 **Worthward.exe** 启动，无需对方安装 Node.js：
 
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\pack-clean.ps1
 ```
 
-产物在 `release\xiang-portable-*.zip`，解压后双击 **所向.exe**；使用说明见同目录 **使用说明.html**。
+产物在 `release\Worthward-portable-*.zip`，解压后双击 **Worthward.exe**；使用说明见同目录 **使用说明.html**。
 
 ## 本机绿色版启动
 
-开发目录也可改为双击 `所向.exe` 启动（并更新桌面快捷方式）：
+开发目录也可改为双击 `Worthward.exe` 启动（并更新桌面快捷方式）：
 
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\setup-portable.ps1

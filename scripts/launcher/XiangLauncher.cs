@@ -146,6 +146,6 @@ internal static class Program
 
     private static void ShowError(string message)
     {
-        MessageBox.Show(message, "所向", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        MessageBox.Show(message, "Worthward", MessageBoxButtons.OK, MessageBoxIcon.Error);
     }
 }

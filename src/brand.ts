@@ -1,6 +1,6 @@
 export const BRAND = {
   chineseName: '所向',
-  englishName: 'WORTHWARD',
+  englishName: 'Worthward',
   tagline: 'Attention, directed.',
   author: 'CashewLab',
   version: '1.0.1',

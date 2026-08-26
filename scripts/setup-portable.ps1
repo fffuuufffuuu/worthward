@@ -21,5 +21,5 @@ if (-not $SkipShortcut) {
     & (Join-Path $PSScriptRoot 'install-shortcut.ps1')
 }
 
-$ExeName = -join ([char]0x6240, [char]0x5411, '.exe')
+$ExeName = 'Worthward.exe'
 Write-Output "PORTABLE_READY=$(Join-Path $ProjectRoot $ExeName)"

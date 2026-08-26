@@ -3,11 +3,11 @@ $ErrorActionPreference = 'Stop'
 $ProjectRoot = Split-Path -Parent $PSScriptRoot
 $stamp = Get-Date -Format 'yyyyMMdd-HHmm'
 $ReleaseRoot = Join-Path $ProjectRoot 'release'
-$StageDir = Join-Path $ReleaseRoot "xiang-portable-$stamp"
-$ZipPath = Join-Path $ReleaseRoot "xiang-portable-$stamp.zip"
+$StageDir = Join-Path $ReleaseRoot "Worthward-portable-$stamp"
+$ZipPath = Join-Path $ReleaseRoot "Worthward-portable-$stamp.zip"
 $GuideFileName = -join ([char]0x4F7F, [char]0x7528, [char]0x8BF4, [char]0x660E, '.html')
 $GuideSource = Join-Path (Join-Path $ProjectRoot 'guide') $GuideFileName
-$ExeName = -join ([char]0x6240, [char]0x5411, '.exe')
+$ExeName = 'Worthward.exe'
 
 function Assert-CleanText([string]$Path, [string]$Label) {
   if (-not (Test-Path -LiteralPath $Path)) { return }
