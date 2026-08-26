@@ -573,7 +573,10 @@ async function handleRequest(request, response, options) {
   const pathname = requestPath(request)
 
   if (pathname === '/api/health' && request.method === 'GET') {
-    sendJson(response, 200, { ok: true })
+    sendJson(response, 200, {
+      ok: true,
+      root: path.resolve(options.distDirectory, '..'),
+    })
     return
   }
 

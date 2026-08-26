@@ -224,7 +224,7 @@ describe('attention workbench interface', () => {
 
     const footer = screen.getByRole('contentinfo')
     expect(within(footer).getByText('CashewLab')).toBeVisible()
-    expect(within(footer).getByText('v0.1.0')).toBeVisible()
+    expect(within(footer).getByText('v1.0.1')).toBeVisible()
     expect(within(footer).getByRole('link', { name: 'GitHub' })).toHaveAttribute(
       'href',
       'https://github.com/fffuuufffuuu/worthward',

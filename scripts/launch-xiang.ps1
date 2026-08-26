@@ -25,6 +25,20 @@ function Test-XiangHealth {
     }
 }
 
+function Test-XiangSameRoot {
+    try {
+        $response = Invoke-RestMethod -Uri $HealthUrl -TimeoutSec 2
+        if ($response.ok -ne $true) { return $false }
+        if (-not $response.root) { return $false }
+        $expected = [System.IO.Path]::GetFullPath($ProjectRoot).TrimEnd('\', '/')
+        $actual = [System.IO.Path]::GetFullPath([string]$response.root).TrimEnd('\', '/')
+        return [string]::Equals($expected, $actual, [System.StringComparison]::OrdinalIgnoreCase)
+    }
+    catch {
+        return $false
+    }
+}
+
 function Test-XiangAiGateway {
     try {
         $response = Invoke-WebRequest -Uri $AiStatusUrl -TimeoutSec 2 -UseBasicParsing
@@ -110,7 +124,7 @@ if ($SelfTest) {
 }
 
 $healthy = Test-XiangHealth
-$current = $healthy -and (Test-XiangAiGateway) -and -not (Test-DistStale)
+$current = $healthy -and (Test-XiangSameRoot) -and (Test-XiangAiGateway) -and -not (Test-DistStale)
 $action = Get-LaunchAction $healthy $current
 
 if ($action -eq 'restart-and-open') {

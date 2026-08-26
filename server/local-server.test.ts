@@ -109,14 +109,17 @@ afterEach(async () => {
 
 describe('local server', () => {
   test('listens only on the loopback address and reports health', async () => {
-    const { baseUrl, server } = await fixture()
+    const { baseUrl, root, server } = await fixture()
     const address = server.address()
     if (!address || typeof address === 'string') throw new Error('Expected a TCP address')
 
     expect(address.address).toBe('127.0.0.1')
     const response = await fetch(`${baseUrl}/api/health`)
     expect(response.status).toBe(200)
-    await expect(response.json()).resolves.toMatchObject({ ok: true })
+    await expect(response.json()).resolves.toEqual({
+      ok: true,
+      root: path.resolve(root),
+    })
   })
 
   test('returns 404 JSON when the workspace file is missing', async () => {

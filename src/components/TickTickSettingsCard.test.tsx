@@ -37,15 +37,15 @@ describe('TickTickSettingsCard', () => {
     await waitFor(() => expect(screen.getByRole('status')).toHaveTextContent('dida CLI 可用'))
   })
 
-  it('explains the independent DidaCLI integration on hover and focus', async () => {
+  it('explains the official DidaCLI integration on hover and focus', async () => {
     const user = userEvent.setup()
     render(<Harness client={{}} />)
 
     await user.click(screen.getByRole('radio', { name: 'CLI' }))
     const info = screen.getByRole('button', { name: '了解滴答清单 CLI' })
     await user.hover(info)
-    expect(screen.getByRole('tooltip')).toHaveTextContent('独立开源')
-    expect(screen.getByRole('tooltip')).toHaveTextContent('并非滴答清单官方产品')
+    expect(screen.getByRole('tooltip')).toHaveTextContent('滴答清单官方')
+    expect(screen.getByRole('tooltip')).not.toHaveTextContent('并非滴答清单官方产品')
     expect(screen.getByRole('link', { name: '查看 DidaCLI 项目说明' })).toHaveAttribute(
       'href',
       'https://github.com/DeliciousBuding/dida-cli',

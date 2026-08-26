@@ -38,12 +38,8 @@ internal static class Program
                 return 1;
             }
 
-            if (IsHealthy())
-            {
-                OpenBrowser();
-                return 0;
-            }
-
+            // Always take over port 5174 from this package. A healthy old process
+            // (hidden, no tray UI) would otherwise keep serving stale code forever.
             StopListener();
             StartServer(nodeExe, root);
 
