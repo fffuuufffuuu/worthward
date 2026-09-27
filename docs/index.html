@@ -1,0 +1,1235 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <meta name="theme-color" content="#173341">
+  <title>所向 · Worthward｜让注意力朝向真正值得的事</title>
+  <meta name="description" content="所向 Worthward 是一款本地优先的个人注意力工作台，帮助你从众多线索中判断什么值得现在投入，并让探索与创造走向成果。">
+  <style>
+    :root {
+      --deep: #173341;
+      --mist: #F3F6F5;
+      --mineral: #C9D4D5;
+      --focus: #50C5A7;
+      --signal: #E56B55;
+      --deep-92: rgba(23, 51, 65, .92);
+      --deep-72: rgba(23, 51, 65, .72);
+      --deep-52: rgba(23, 51, 65, .52);
+      --deep-20: rgba(23, 51, 65, .20);
+      --deep-10: rgba(23, 51, 65, .10);
+      --deep-06: rgba(23, 51, 65, .06);
+      --focus-20: rgba(80, 197, 167, .20);
+      --focus-10: rgba(80, 197, 167, .10);
+      --signal-15: rgba(229, 107, 85, .15);
+      --white: #fff;
+      --display: "Iowan Old Style", Baskerville, "Songti SC", SimSun, serif;
+      --body: "Segoe UI", "Microsoft YaHei UI", "Microsoft YaHei", sans-serif;
+      --utility: "Cascadia Mono", Consolas, monospace;
+      --page: min(1240px, calc(100% - 64px));
+      --radius: 18px;
+      --shadow: 0 24px 70px rgba(23, 51, 65, .12);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--deep);
+      background: var(--mist);
+      font-family: var(--body);
+      line-height: 1.7;
+      -webkit-font-smoothing: antialiased;
+    }
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 30;
+      opacity: .28;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.035'/%3E%3C/svg%3E");
+    }
+    a { color: inherit; }
+    button, summary { font: inherit; }
+    button { color: inherit; }
+    ::selection { background: var(--focus); color: var(--deep); }
+
+    .skip-link {
+      position: fixed;
+      left: 18px;
+      top: -80px;
+      z-index: 100;
+      padding: 10px 14px;
+      color: var(--white);
+      background: var(--deep);
+      border-radius: 8px;
+      transition: top .2s ease;
+    }
+    .skip-link:focus-visible { top: 18px; }
+
+    :focus-visible {
+      outline: 3px solid var(--signal);
+      outline-offset: 4px;
+    }
+
+    .site-header {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      height: 74px;
+      background: rgba(243, 246, 245, .9);
+      border-bottom: 1px solid var(--deep-10);
+      backdrop-filter: blur(18px);
+    }
+    .nav-shell {
+      width: var(--page);
+      height: 100%;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      gap: 34px;
+    }
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+    .brand-logo {
+      width: 38px;
+      height: 38px;
+      display: block;
+      flex: 0 0 auto;
+      border-radius: 11px;
+    }
+    .brand-name {
+      font-family: var(--display);
+      font-size: 24px;
+      font-weight: 700;
+      letter-spacing: .04em;
+    }
+    .brand-en {
+      padding-left: 12px;
+      border-left: 1px solid var(--deep-20);
+      font-family: var(--utility);
+      color: #536872;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: .14em;
+    }
+    .nav-links {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: 28px;
+    }
+    .nav-links a {
+      position: relative;
+      color: var(--deep-72);
+      font-size: 14px;
+      text-decoration: none;
+    }
+    .nav-links a::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 100%;
+      bottom: -7px;
+      height: 2px;
+      background: var(--focus);
+      transition: right .25s ease;
+    }
+    .nav-links a:hover::after,
+    .nav-links a[aria-current="true"]::after { right: 0; }
+    .nav-links .nav-start {
+      padding: 7px 13px;
+      color: var(--white);
+      background: var(--deep);
+      border-radius: 7px;
+      font-weight: 700;
+      transition: background .2s ease, transform .2s ease;
+    }
+    .nav-links .nav-start::after { display: none; }
+    .nav-links .nav-start:hover {
+      background: #244b58;
+      transform: translateY(-1px);
+    }
+    main { overflow: hidden; }
+    .section-shell { width: var(--page); margin: 0 auto; }
+    .section-kicker {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 18px;
+      font-family: var(--utility);
+      color: var(--deep-72);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: .13em;
+      text-transform: uppercase;
+    }
+    .section-kicker::before {
+      content: "";
+      width: 28px;
+      height: 2px;
+      background: var(--focus);
+    }
+    .section-title {
+      max-width: 820px;
+      margin: 0;
+      font-family: var(--display);
+      font-size: clamp(38px, 5vw, 68px);
+      font-weight: 700;
+      line-height: 1.12;
+      letter-spacing: -.035em;
+    }
+    .section-intro {
+      max-width: 670px;
+      margin: 22px 0 0;
+      color: var(--deep-72);
+      font-size: 18px;
+    }
+
+    .hero {
+      min-height: calc(100vh - 74px);
+      display: grid;
+      align-items: center;
+      padding: 70px 0 84px;
+    }
+    .hero-grid {
+      width: var(--page);
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(400px, .9fr);
+      gap: 48px;
+      align-items: center;
+    }
+    .hero-copy { max-width: 720px; }
+    .hero-brand-lockup {
+      display: flex;
+      align-items: baseline;
+      gap: 15px;
+      margin-bottom: 18px;
+    }
+    .hero-brand-cn {
+      font-family: var(--display);
+      font-size: 27px;
+      font-weight: 700;
+      letter-spacing: .08em;
+    }
+    .hero-brand-en {
+      font-family: var(--utility);
+      color: var(--deep-72);
+      font-size: 15px;
+      font-weight: 800;
+      letter-spacing: .16em;
+    }
+    .hero-eyebrow {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 30px;
+      font-family: var(--utility);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: .17em;
+    }
+    .hero-eyebrow .pulse {
+      width: 8px;
+      height: 8px;
+      background: var(--focus);
+      border-radius: 50%;
+      box-shadow: 0 0 0 6px var(--focus-20);
+    }
+    h1 {
+      margin: 0;
+      font-family: var(--display);
+      font-size: clamp(54px, 7vw, 96px);
+      font-weight: 700;
+      line-height: .98;
+      letter-spacing: -.055em;
+    }
+    h1 span { display: block; }
+    h1 .quiet { color: var(--deep-52); }
+    .hero-lead {
+      max-width: 620px;
+      margin: 30px 0 0;
+      color: var(--deep-72);
+      font-size: clamp(18px, 2vw, 22px);
+      line-height: 1.75;
+    }
+    .hero-lead strong { color: var(--deep); }
+    .hero-actions {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 18px;
+      margin-top: 38px;
+    }
+    .primary-cta, .text-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      min-height: 52px;
+      padding: 0 22px;
+      font-weight: 700;
+      text-decoration: none;
+    }
+    .primary-cta { color: var(--white); background: var(--deep); border-radius: 7px; }
+    .primary-cta svg, .text-cta svg { width: 16px; transition: transform .2s ease; }
+    .primary-cta:hover svg, .text-cta:hover svg { transform: translateX(4px); }
+    .text-cta { padding-inline: 4px; color: var(--deep-72); }
+
+    .hero-orbit {
+      min-height: 520px;
+      position: relative;
+      display: grid;
+      place-items: center;
+    }
+    .orbit-field {
+      width: min(480px, 100%);
+      aspect-ratio: 1;
+      position: relative;
+      display: grid;
+      place-items: center;
+    }
+    .orbit-ring {
+      position: absolute;
+      border: 1px solid var(--deep-20);
+      border-radius: 50%;
+      animation: gather 1.2s cubic-bezier(.2,.8,.2,1) both;
+    }
+    .orbit-ring:nth-child(1) { inset: 2%; animation-delay: .05s; }
+    .orbit-ring:nth-child(2) { inset: 16%; border-width: 10px; border-color: var(--deep-10); animation-delay: .15s; }
+    .orbit-ring:nth-child(3) { inset: 31%; border-width: 2px; border-color: var(--deep-52); animation-delay: .25s; }
+    .orbit-core {
+      width: 82px;
+      height: 82px;
+      z-index: 2;
+      display: grid;
+      place-items: center;
+      color: var(--deep);
+      background: var(--focus);
+      border-radius: 50%;
+      font-family: var(--utility);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: .09em;
+      animation: core-in .8s .55s both;
+    }
+    .signal {
+      position: absolute;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--utility);
+      color: var(--deep-72);
+      font-size: 10px;
+      letter-spacing: .07em;
+      animation: signal-in .5s both;
+    }
+    .signal::before { content: ""; width: 7px; height: 7px; background: var(--signal); border-radius: 50%; }
+    .signal-1 { top: 9%; right: 8%; animation-delay: .72s; }
+    .signal-2 { left: 0; top: 48%; animation-delay: .82s; }
+    .signal-3 { right: 2%; bottom: 16%; animation-delay: .92s; }
+    .orbit-caption {
+      position: absolute;
+      left: 8%;
+      bottom: 2%;
+      width: 180px;
+      padding-top: 12px;
+      border-top: 1px solid var(--deep-20);
+      color: var(--deep-72);
+      font-size: 12px;
+    }
+    @keyframes gather { from { transform: scale(1.18); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+    @keyframes core-in { from { transform: scale(.45); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+    @keyframes signal-in { from { transform: translateY(8px); opacity: 0; } to { transform: none; opacity: 1; } }
+
+    .thesis {
+      padding: 104px 0;
+      color: var(--white);
+      background: var(--deep);
+    }
+    .thesis-grid {
+      display: grid;
+      grid-template-columns: .75fr 1.25fr;
+      gap: 72px;
+      align-items: start;
+    }
+    .thesis .section-kicker { color: var(--mineral); }
+    .thesis-statement {
+      margin: 0;
+      font-family: var(--display);
+      font-size: clamp(40px, 3.4vw, 50px);
+      line-height: 1.12;
+      letter-spacing: -.035em;
+    }
+    .thesis-statement span { display: block; }
+    .thesis-statement em { color: var(--focus); font-style: normal; }
+    .responsibility-map { border-top: 1px solid rgba(255,255,255,.2); }
+    .responsibility {
+      display: grid;
+      grid-template-columns: 160px 1fr auto;
+      gap: 22px;
+      align-items: center;
+      padding: 24px 0;
+      border-bottom: 1px solid rgba(255,255,255,.2);
+    }
+    .responsibility-name { font-family: var(--display); font-size: 24px; font-weight: 700; }
+    .responsibility--worthward {
+      margin-inline: -18px;
+      padding-inline: 18px;
+      border-left: 4px solid var(--focus);
+      background: rgba(80, 197, 167, .08);
+    }
+    .responsibility--worthward .responsibility-name { color: var(--focus); font-size: 30px; }
+    .responsibility p { margin: 0; color: var(--mineral); }
+    .responsibility-role {
+      min-width: 88px;
+      text-align: right;
+      font-family: var(--utility);
+      color: var(--focus);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .08em;
+    }
+
+    .method { padding: 118px 0; }
+    .method-header {
+      display: grid;
+      grid-template-columns: minmax(0, 1.4fr) minmax(320px, .6fr);
+      gap: 50px;
+      align-items: end;
+      margin-bottom: 64px;
+    }
+    .method .section-title { font-size: clamp(42px, 3.5vw, 52px); white-space: nowrap; }
+    .method-header .section-intro { max-width: 450px; margin-bottom: 7px; }
+    .lifecycle { position: relative; display: flex; flex-direction: column; gap: 12px; }
+    .lifecycle::before {
+      content: "";
+      position: absolute;
+      right: 34px;
+      top: 34px;
+      bottom: 34px;
+      width: 1px;
+      background: var(--focus);
+    }
+    .stage {
+      position: relative;
+      display: grid;
+      grid-template-columns: 70px minmax(330px, 1fr) minmax(220px, .8fr);
+      gap: 24px;
+      align-items: center;
+      min-height: 116px;
+      margin-left: auto;
+      padding: 24px 72px 24px 28px;
+      border: 1px solid var(--deep-20);
+      border-radius: 4px 0 0 4px;
+      background: rgba(255,255,255,.46);
+      transition: transform .25s ease, background .25s ease;
+    }
+    .stage:nth-child(1) { width: 100%; }
+    .stage:nth-child(2) { width: 90%; }
+    .stage:nth-child(3) { width: 80%; }
+    .stage:nth-child(4) { width: 70%; color: var(--white); background: var(--deep); border-color: var(--deep); }
+    .stage::after {
+      content: "";
+      position: absolute;
+      right: 24px;
+      width: 14px;
+      height: 14px;
+      border: 4px solid var(--mist);
+      border-radius: 50%;
+      background: var(--focus);
+    }
+    .stage:hover { transform: translateX(-6px); background: var(--white); }
+    .stage:nth-child(4):hover { background: var(--deep-92); }
+    .stage-number {
+      font-family: var(--utility);
+      color: var(--deep-52);
+      font-size: 24px;
+      font-weight: 700;
+      line-height: 1;
+    }
+    .stage h3 { margin: 0; font-family: var(--display); font-size: 29px; line-height: 1.1; white-space: nowrap; }
+    .stage-cn { display: block; margin-top: 7px; color: var(--deep-72); font-size: 14px; font-weight: 600; }
+    .stage p { margin: 0; color: var(--deep-72); font-size: 15px; }
+    .stage:nth-child(4) .stage-number,
+    .stage:nth-child(4) .stage-cn,
+    .stage:nth-child(4) p { color: var(--mineral); }
+
+    .showcase { padding: 110px 0 120px; background: var(--white); }
+    .showcase-head {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 50px;
+      align-items: end;
+      margin-bottom: 48px;
+    }
+    .showcase-head .section-intro { margin-bottom: 6px; }
+    .showcase-tabs {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 16px;
+      padding: 5px;
+      border: 1px solid var(--deep-10);
+      border-radius: 10px;
+      background: var(--mist);
+      width: fit-content;
+    }
+    .showcase-tab {
+      padding: 10px 16px;
+      border: 0;
+      border-radius: 7px;
+      background: transparent;
+      cursor: pointer;
+      font-weight: 700;
+    }
+    .showcase-tab[aria-selected="true"] { color: var(--white); background: var(--deep); }
+    .showcase-controls {
+      display: grid;
+      grid-template-columns: auto minmax(320px, 1fr);
+      gap: 28px;
+      align-items: center;
+      margin-bottom: 18px;
+    }
+    .showcase-controls .showcase-tabs { margin-bottom: 0; }
+    .showcase-context {
+      min-height: 50px;
+      margin: 0;
+      padding: 10px 18px;
+      display: flex;
+      align-items: center;
+      border-left: 3px solid var(--focus);
+      color: var(--deep);
+      background: var(--focus-10);
+      font-size: 15px;
+      font-weight: 600;
+      line-height: 1.65;
+    }
+    .product-window {
+      overflow: hidden;
+      border: 1px solid var(--deep-20);
+      border-radius: var(--radius);
+      background: var(--mist);
+      box-shadow: var(--shadow);
+    }
+    .window-bar {
+      height: 52px;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      padding: 0 18px;
+      border-bottom: 1px solid var(--deep-10);
+      background: var(--white);
+    }
+    .window-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--mineral); }
+    .window-title { margin-left: 10px; font-family: var(--utility); color: var(--deep-52); font-size: 10px; }
+    .product-panel { min-height: 470px; padding: 28px; }
+    .js .product-panel[hidden] { display: none; }
+    .board-demo { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+    .demo-column {
+      min-height: 360px;
+      padding: 15px;
+      border: 1px solid var(--deep-10);
+      background: var(--white);
+    }
+    .demo-column-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 18px;
+      padding-bottom: 13px;
+      border-bottom: 1px solid var(--deep-10);
+      font-family: var(--display);
+      font-weight: 700;
+    }
+    .demo-count { font-family: var(--utility); color: var(--deep-52); font-size: 10px; }
+    .demo-card {
+      margin-bottom: 10px;
+      padding: 14px;
+      border-left: 4px solid var(--focus);
+      background: var(--mist);
+    }
+    .demo-card--create { border-left-color: var(--signal); }
+    .demo-card__kind { font-family: var(--utility); color: var(--deep-52); font-size: 9px; letter-spacing: .06em; }
+    .demo-card h4 { margin: 7px 0 4px; font-family: var(--display); font-size: 15px; line-height: 1.35; }
+    .demo-card p { margin: 0; color: var(--deep-52); font-size: 11px; line-height: 1.5; }
+    .review-demo { display: grid; grid-template-columns: 270px 1fr 1fr; gap: 14px; }
+    .review-aside, .review-lane { min-height: 360px; padding: 20px; background: var(--white); border: 1px solid var(--deep-10); }
+    .review-aside { background: var(--deep); color: var(--white); }
+    .review-aside small { font-family: var(--utility); color: var(--mineral); }
+    .review-aside h4 { margin: 14px 0 28px; font-family: var(--display); font-size: 24px; line-height: 1.25; }
+    .capacity { margin-top: 14px; padding: 12px 0; border-top: 1px solid rgba(255,255,255,.2); }
+    .capacity strong { display: block; color: var(--focus); font-family: var(--utility); font-size: 24px; }
+    .review-lane h4 { margin: 0 0 18px; font-family: var(--display); font-size: 19px; }
+    .review-lane--forward h4 { color: var(--deep); }
+    .review-lane--release h4 { color: var(--signal); }
+    .mini-choice { margin-bottom: 10px; padding: 13px; background: var(--mist); border-left: 3px solid var(--focus); font-size: 12px; }
+    .review-lane--release .mini-choice { border-left-color: var(--signal); }
+    .insight-demo { display: grid; grid-template-columns: .8fr 1.2fr; gap: 14px; }
+    .insight-block { min-height: 360px; padding: 22px; border: 1px solid var(--deep-10); background: var(--white); }
+    .insight-block h4 { margin: 0 0 28px; font-family: var(--display); font-size: 20px; }
+    .bar-row { display: grid; grid-template-columns: 92px 1fr 34px; align-items: center; gap: 10px; margin-bottom: 22px; font-size: 11px; }
+    .bar { height: 13px; background: var(--deep-06); }
+    .bar i { height: 100%; display: block; background: var(--deep); }
+    .bar-row:nth-child(3) .bar i { background: var(--focus); }
+    .bar-row:nth-child(4) .bar i { background: var(--signal); }
+    .topic-orbit { min-height: 230px; display: grid; place-items: center; position: relative; }
+    .topic-donut { width: 170px; height: 170px; border-radius: 50%; background: conic-gradient(var(--deep) 0 31%, var(--focus) 31% 56%, var(--signal) 56% 72%, var(--mineral) 72%); position: relative; }
+    .topic-donut::after { content: "关注领域\A6 8"; white-space: pre; position: absolute; inset: 35px; display: grid; place-items: center; text-align: center; background: var(--white); border-radius: 50%; font-family: var(--utility); font-size: 11px; }
+    .showcase-note { margin: 18px 0 0; color: var(--deep-52); font-size: 12px; }
+
+    .features { padding: 118px 0; background: var(--white); }
+    .features-head {
+      display: grid;
+      grid-template-columns: .85fr 1.15fr;
+      gap: 70px;
+      align-items: end;
+      margin-bottom: 58px;
+    }
+    .features-head .section-intro { margin-bottom: 6px; }
+    .feature-grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 14px; }
+    .feature-card {
+      position: relative;
+      min-height: 230px;
+      padding: 28px;
+      overflow: hidden;
+      border: 1px solid var(--deep-20);
+      background: var(--mist);
+    }
+    .feature-card--lead { grid-column: span 7; grid-row: span 2; min-height: 474px; color: var(--white); background: var(--deep); }
+    .feature-card--wide { grid-column: span 5; }
+    .feature-card--half { grid-column: span 6; }
+    .feature-card__label { font-family: var(--utility); color: var(--deep-52); font-size: 10px; letter-spacing: .1em; }
+    .feature-card--lead .feature-card__label { color: var(--focus); }
+    .feature-card h3 { max-width: 500px; margin: 34px 0 14px; font-family: var(--display); font-size: 28px; line-height: 1.18; }
+    .feature-card--lead h3 { max-width: 620px; margin-top: 86px; font-size: clamp(40px, 4vw, 58px); }
+    .feature-card p { max-width: 590px; margin: 0; color: var(--deep-72); }
+    .feature-card--lead p { max-width: 520px; color: var(--mineral); font-size: 18px; }
+    .feature-card strong { color: var(--deep); }
+    .feature-card--lead strong { color: var(--white); }
+    .choice-seal {
+      position: absolute;
+      right: -46px;
+      bottom: -46px;
+      width: 190px;
+      height: 190px;
+      display: grid;
+      place-items: center;
+      border: 1px solid rgba(255,255,255,.25);
+      border-radius: 50%;
+      font-family: var(--utility);
+      color: var(--focus);
+      font-size: 11px;
+      letter-spacing: .12em;
+    }
+    .choice-seal::before, .choice-seal::after { content: ""; position: absolute; border: 1px solid rgba(255,255,255,.15); border-radius: 50%; }
+    .choice-seal::before { inset: 22px; }
+    .choice-seal::after { inset: 54px; background: var(--focus); }
+
+    .start { padding: 118px 0; background: var(--focus-10); }
+    .start-header {
+      display: grid;
+      grid-template-columns: 1.55fr .45fr;
+      gap: 70px;
+      align-items: end;
+      margin-bottom: 66px;
+    }
+    .start .section-title { font-size: clamp(44px, 4.2vw, 60px); }
+    .start-header .section-intro { margin-bottom: 7px; }
+    .download-box {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      margin: 0 0 34px;
+      padding: 25px 30px;
+      color: var(--white);
+      background: var(--deep);
+      border-radius: 18px;
+    }
+    .download-box h3 { margin: 0; font-family: var(--display); font-size: clamp(25px, 3vw, 35px); line-height: 1.25; }
+    .download-box p { margin: 7px 0 0; color: rgba(255,255,255,.76); }
+    .download-box a {
+      flex: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 52px;
+      padding: 0 22px;
+      color: var(--deep);
+      background: var(--focus);
+      border-radius: 7px;
+      font-weight: 700;
+      text-decoration: none;
+    }
+    .download-box a:hover { background: #78d9bf; }
+    .download-box a:focus-visible { outline: 3px solid var(--white); outline-offset: 3px; }
+    .start-route { position: relative; display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; counter-reset: start; }
+    .start-route::before {
+      content: "";
+      position: absolute;
+      left: 28px;
+      right: 28px;
+      top: 28px;
+      height: 2px;
+      background: var(--deep-20);
+    }
+    .start-step {
+      counter-increment: start;
+      position: relative;
+      padding: 76px 22px 26px;
+      border: 1px solid var(--deep-20);
+      background: rgba(255,255,255,.6);
+    }
+    .start-step::before {
+      content: "0" counter(start);
+      position: absolute;
+      left: 18px;
+      top: 12px;
+      width: 32px;
+      height: 32px;
+      display: grid;
+      place-items: center;
+      font-family: var(--utility);
+      color: var(--white);
+      background: var(--deep);
+      border-radius: 50%;
+      font-size: 12px;
+    }
+    .start-step h3 { margin: 0; font-family: var(--display); font-size: 25px; line-height: 1.2; }
+    .start-step p { margin: 10px 0 0; color: var(--deep-72); }
+    .start-warning {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 18px;
+      align-items: center;
+      margin-top: 22px;
+      padding: 20px 24px;
+      color: var(--white);
+      background: var(--signal);
+    }
+    .start-warning strong { font-family: inherit; font-size: inherit; line-height: inherit; letter-spacing: 0; }
+    .start-warning p { margin: 0; }
+    code {
+      font-family: var(--utility);
+      font-size: .88em;
+      overflow-wrap: anywhere;
+    }
+    code { padding: 3px 7px; background: var(--deep-06); border-radius: 4px; }
+    .faq { padding: 110px 0; }
+    .faq-grid { display: grid; grid-template-columns: .7fr 1.3fr; gap: 80px; }
+    .faq-list { border-top: 1px solid var(--deep-20); }
+    details { border-bottom: 1px solid var(--deep-20); }
+    summary {
+      list-style: none;
+      position: relative;
+      padding: 23px 42px 23px 0;
+      cursor: pointer;
+      font-weight: 700;
+    }
+    summary::-webkit-details-marker { display: none; }
+    summary::after {
+      content: "+";
+      position: absolute;
+      right: 6px;
+      top: 19px;
+      font-family: var(--utility);
+      color: var(--deep-52);
+      font-size: 22px;
+    }
+    details[open] summary::after { content: "−"; }
+    .answer { padding: 0 50px 24px 0; color: var(--deep-72); }
+    .answer p { margin: 0; }
+
+    footer { padding: 38px 0; border-top: 1px solid var(--deep-10); }
+    .footer-grid { width: var(--page); margin: 0 auto; display: grid; grid-template-columns: 1fr auto 1fr; gap: 30px; align-items: center; }
+    .footer-line { font-family: var(--utility); color: #536872; font-size: 10px; letter-spacing: .12em; }
+    .footer-meta { display: flex; align-items: center; gap: 14px; color: var(--deep-72); font-size: 12px; }
+    .footer-meta span + a { padding-left: 14px; border-left: 1px solid var(--deep-20); }
+    .footer-github { color: #536872; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+    .footer-github:hover { color: var(--deep); text-decoration-thickness: 2px; }
+    .footer-note { color: #536872; font-size: 12px; text-align: right; }
+
+    .reveal { opacity: 1; transform: none; }
+
+    @media (max-width: 980px) {
+      :root { --page: min(100% - 40px, 880px); }
+      .nav-links { display: none; }
+      .hero-grid { grid-template-columns: 1fr .75fr; }
+      .hero-orbit { min-height: 400px; }
+      .thesis-grid, .faq-grid { grid-template-columns: 1fr; gap: 48px; }
+      .method-header, .showcase-head, .features-head, .start-header { display: block; }
+      .method-header .section-intro, .showcase-head .section-intro { max-width: 650px; }
+      .stage { grid-template-columns: 64px minmax(260px, .85fr) 1fr; }
+      .board-demo { grid-template-columns: 1fr 1fr; }
+      .review-demo { grid-template-columns: 1fr 1fr; }
+      .review-aside { grid-column: 1 / -1; min-height: 0; }
+      .insight-demo { grid-template-columns: 1fr; }
+      .feature-card--lead, .feature-card--wide, .feature-card--half { grid-column: span 12; grid-row: auto; min-height: 0; }
+      .feature-card--lead { min-height: 390px; }
+      .start-route { grid-template-columns: 1fr 1fr; }
+      .start-route::before { display: none; }
+    }
+
+    @media (max-width: 760px) {
+      .download-box { display: block; padding: 24px; }
+      .download-box a { width: 100%; margin-top: 20px; }
+      :root { --page: calc(100% - 30px); }
+      .site-header { height: 64px; }
+      .nav-shell { gap: 12px; }
+      .brand-logo { width: 32px; height: 32px; border-radius: 9px; }
+      .brand-name { font-size: 21px; }
+      .brand-en { padding-left: 9px; font-size: 9px; letter-spacing: .1em; }
+      .hero { min-height: auto; padding: 70px 0 54px; }
+      .hero-grid { grid-template-columns: 1fr; gap: 24px; }
+      h1 { font-size: clamp(50px, 15vw, 70px); }
+      .hero-lead { font-size: 18px; }
+      .hero-actions { align-items: flex-start; flex-direction: column; }
+      .hero-orbit { min-height: 330px; }
+      .orbit-field { width: 330px; max-width: 100%; }
+      .orbit-core { width: 66px; height: 66px; }
+      .signal-2 { left: 4%; }
+      .orbit-caption { left: 0; bottom: -2%; }
+      .thesis, .method, .showcase, .features, .start, .faq { padding: 78px 0; }
+      .thesis-grid { gap: 44px; }
+      .responsibility { grid-template-columns: 1fr auto; gap: 8px 18px; }
+      .responsibility p { grid-column: 1 / -1; }
+      .responsibility-name { font-size: 21px; }
+      .method-header { margin-bottom: 42px; }
+      .method .section-title { white-space: normal; }
+      .section-title { font-size: 40px; }
+      .section-intro { font-size: 16px; }
+      .lifecycle { display: block; }
+      .lifecycle::before { display: none; }
+      .stage, .stage:nth-child(n) { width: 100%; min-height: 0; margin-bottom: 10px; padding: 24px 48px 24px 20px; display: block; border-radius: 0; }
+      .stage::after { right: 16px; top: 27px; }
+      .stage-number { display: block; margin-bottom: 16px; }
+      .stage h3 { white-space: nowrap; }
+      .stage p { margin-top: 16px; }
+      .showcase-tabs { width: 100%; }
+      .showcase-tab { flex: 1; padding-inline: 8px; font-size: 13px; }
+      .showcase-controls { display: block; }
+      .showcase-context { margin-top: 16px; }
+      .product-panel { min-height: 0; padding: 12px; }
+      .board-demo { grid-template-columns: 1fr; }
+      .demo-column { min-height: 0; }
+      .review-demo { grid-template-columns: 1fr; }
+      .review-aside { grid-column: auto; }
+      .review-aside, .review-lane, .insight-block { min-height: 0; }
+      .topic-donut { width: 140px; height: 140px; }
+      .topic-donut::after { inset: 29px; }
+      .feature-grid { display: block; }
+      .feature-card { min-height: 0; margin-bottom: 12px; padding: 24px; }
+      .feature-card--lead { min-height: 360px; }
+      .feature-card--lead h3 { margin-top: 70px; font-size: 42px; }
+      .start-route { display: block; }
+      .start-step { min-height: 0; margin-bottom: 12px; }
+      .start-step h3 { font-size: 24px; }
+      .start-warning { grid-template-columns: 1fr; gap: 8px; }
+      .faq-grid { gap: 42px; }
+      .footer-grid { grid-template-columns: 1fr; align-items: flex-start; gap: 12px; }
+      .footer-note { text-align: left; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        scroll-behavior: auto !important;
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: .01ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#content">跳到主要内容</a>
+
+  <header class="site-header">
+    <nav class="nav-shell" aria-label="主要导航">
+      <a class="brand" href="#top" aria-label="所向说明页首页">
+        <img class="brand-logo" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Crect width='256' height='256' rx='72' fill='%231f3442'/%3E%3Ccircle cx='128' cy='128' r='83' fill='none' stroke='%23fff' stroke-opacity='.45' stroke-width='15'/%3E%3Ccircle cx='128' cy='128' r='52' fill='none' stroke='%23fff' stroke-opacity='.75' stroke-width='15'/%3E%3Ccircle cx='128' cy='128' r='26' fill='%234fc3a1'/%3E%3C/svg%3E" alt="" aria-hidden="true">
+        <span class="brand-name">所向</span>
+        <span class="brand-en">Worthward</span>
+      </a>
+      <div class="nav-links">
+        <a href="#why">为什么</a>
+        <a href="#method">如何工作</a>
+        <a href="#features">软件特色</a>
+        <a class="nav-start" href="#start">开始使用</a>
+      </div>
+    </nav>
+  </header>
+
+  <main id="content">
+    <section class="hero" id="top" aria-labelledby="hero-title">
+      <div class="hero-grid">
+        <div class="hero-copy">
+          <div class="hero-brand-lockup"><span class="hero-brand-cn">所向</span><span class="hero-brand-en">Worthward</span></div>
+          <div class="hero-eyebrow"><span class="pulse" aria-hidden="true"></span>Attention, directed.</div>
+          <h1 id="hero-title" aria-label="事情很多，真正值得投入的很少。"><span class="quiet">事情很多，</span><span>真正值得投入的很少。</span></h1>
+          <p class="hero-lead"><strong>让注意力，朝向真正值得的事。</strong> 所向帮助你在行动之前收拢线索、比较取舍，把有限注意力留给真正重要的探索与创造。</p>
+          <div class="hero-actions">
+            <a class="primary-cta" href="#download">下载 Windows 免安装版
+              <svg aria-hidden="true" viewBox="0 0 16 16"><path d="M3 8h9M9 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
+            </a>
+            <a class="text-cta" href="#why">了解所向如何工作
+              <svg aria-hidden="true" viewBox="0 0 16 16"><path d="M3 8h9M9 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
+            </a>
+          </div>
+        </div>
+
+        <div class="hero-orbit" aria-label="注意力由外围线索向中心收束的示意图">
+          <div class="orbit-field" aria-hidden="true">
+            <span class="orbit-ring"></span>
+            <span class="orbit-ring"></span>
+            <span class="orbit-ring"></span>
+            <span class="orbit-core">NOW</span>
+            <span class="signal signal-1">新线索</span>
+            <span class="signal signal-2">想尝试</span>
+            <span class="signal signal-3">也许重要</span>
+            <span class="orbit-caption">不是把所有事情都做完，<br>而是看清哪件事值得开始。</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="thesis" id="why" aria-labelledby="why-title">
+      <div class="section-shell thesis-grid">
+        <div class="reveal">
+          <div class="section-kicker">WHY WORTHWARD</div>
+          <h2 class="thesis-statement" id="why-title"><span>管理的不是任务，</span><span>而是<em>投入之前</em></span><span><em>的选择。</em></span></h2>
+        </div>
+        <div class="responsibility-map reveal">
+          <div class="responsibility">
+            <span class="responsibility-name">知识库软件</span>
+            <p>收藏、连接和沉淀已经获得的知识。</p>
+            <span class="responsibility-role">保存知识</span>
+          </div>
+          <div class="responsibility">
+            <span class="responsibility-name">日历清单软件</span>
+            <p>承接已经决定要做的动作、时间和提醒。</p>
+            <span class="responsibility-role">执行任务</span>
+          </div>
+          <div class="responsibility responsibility--worthward">
+            <span class="responsibility-name">所向</span>
+            <p>在投入之前，回答“什么值得我现在投入注意力”。</p>
+            <span class="responsibility-role">决定投入</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="method" id="method" aria-labelledby="method-title">
+      <div class="section-shell">
+        <div class="method-header reveal">
+          <div>
+            <div class="section-kicker">FROM SIGNAL TO OUTCOME</div>
+            <h2 class="section-title" id="method-title">让一条线索，逐步成为成果。</h2>
+          </div>
+          <p class="section-intro">每次前进都意味着更强的承诺。所向不会催你把所有想法变成任务，而是让不够重要的事自然让位。</p>
+        </div>
+
+        <div class="lifecycle reveal" aria-label="所向的四个阶段">
+          <article class="stage">
+            <span class="stage-number">01</span>
+            <h3>Radar<span class="stage-cn">雷达 · 先收下</span></h3>
+            <p>记录可能值得关注的线索。此刻不需要承诺，也不必立刻安排任务。</p>
+          </article>
+          <article class="stage">
+            <span class="stage-number">02</span>
+            <h3>Focus<span class="stage-cn">聚焦 · 放进近期视野</span></h3>
+            <p>把真正想持续关注的少数事项留下，与其他候选进行比较。</p>
+          </article>
+          <article class="stage">
+            <span class="stage-number">03</span>
+            <h3>Engage<span class="stage-cn">投入 · 正式承诺</span></h3>
+            <p>决定投入时间与精力，形成执行计划，并将具体动作交给滴答清单。</p>
+          </article>
+          <article class="stage">
+            <span class="stage-number">04</span>
+            <h3>Outcome &amp; Review<span class="stage-cn">成果与复盘 · 留下经验</span></h3>
+            <p>记录形成了什么、学到了什么，再归档或生长出新的线索。</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="showcase" aria-labelledby="showcase-title">
+      <div class="section-shell">
+        <div class="showcase-head reveal">
+          <div>
+            <div class="section-kicker">INSIDE THE WORKBENCH</div>
+            <h2 class="section-title" id="showcase-title">一张工作台，看清注意力的去向。</h2>
+          </div>
+          <p class="section-intro">所向把选择、承诺与回顾放在同一条路径上，但把具体任务和知识沉淀留给更擅长的工具。</p>
+        </div>
+
+        <div class="showcase-controls reveal">
+          <div class="showcase-tabs" role="tablist" aria-label="软件界面示例">
+            <button class="showcase-tab" type="button" role="tab" aria-selected="true" aria-controls="panel-board" id="tab-board" data-panel="panel-board" data-description="卡片从 Radar 到 Outcome 逐步推进，让尚未承诺、正在关注和已经投入的事项各归其位。">探索与创造</button>
+            <button class="showcase-tab" type="button" role="tab" aria-selected="false" aria-controls="panel-review" id="tab-review" data-panel="panel-review" data-description="设定Focus和Engage任务上限，帮助用户聚焦，让有限容量留给当前最重要的方向。">注意力梳理</button>
+            <button class="showcase-tab" type="button" role="tab" aria-selected="false" aria-controls="panel-insights" id="tab-insights" data-panel="panel-insights" data-description="通过阶段分布与主题分布，看清注意力集中在哪里，以及哪些事项停滞太久。">洞察</button>
+          </div>
+          <p class="showcase-context" id="showcase-description" aria-live="polite">卡片从 Radar 到 Outcome 逐步推进，让尚未承诺、正在关注和已经投入的事项各归其位。</p>
+        </div>
+
+        <div class="product-window reveal">
+          <div class="window-bar" aria-hidden="true">
+            <span class="window-dot"></span><span class="window-dot"></span><span class="window-dot"></span>
+            <span class="window-title">Worthward / LOCAL WORKBENCH</span>
+          </div>
+
+          <section class="product-panel" role="tabpanel" id="panel-board" aria-labelledby="tab-board">
+            <div class="board-demo">
+              <div class="demo-column">
+                <div class="demo-column-head"><span>Radar</span><span class="demo-count">3</span></div>
+                <article class="demo-card">
+                  <span class="demo-card__kind">探索 · 主题</span>
+                  <h4>理解生成式 AI 如何改变备课</h4>
+                  <p>先收下，不急着承诺。</p>
+                </article>
+                <article class="demo-card demo-card--create">
+                  <span class="demo-card__kind">创造 · 写作</span>
+                  <h4>写一篇关于注意力选择的文章</h4>
+                  <p>等待进一步判断。</p>
+                </article>
+              </div>
+              <div class="demo-column">
+                <div class="demo-column-head"><span>Focus</span><span class="demo-count">1 / 10</span></div>
+                <article class="demo-card">
+                  <span class="demo-card__kind">探索 · 课程</span>
+                  <h4>设计一次 AI 课堂实验</h4>
+                  <p>本周持续关注。</p>
+                </article>
+              </div>
+              <div class="demo-column">
+                <div class="demo-column-head"><span>Engage</span><span class="demo-count">1 / 4</span></div>
+                <article class="demo-card demo-card--create">
+                  <span class="demo-card__kind">创造 · 项目</span>
+                  <h4>完成学生反馈工具原型</h4>
+                  <p>已经承诺，正在投入。</p>
+                </article>
+              </div>
+              <div class="demo-column">
+                <div class="demo-column-head"><span>Outcome</span><span class="demo-count">1</span></div>
+                <article class="demo-card">
+                  <span class="demo-card__kind">成果 · 待复盘</span>
+                  <h4>完成课堂实验记录</h4>
+                  <p>留下成果与反思。</p>
+                </article>
+              </div>
+            </div>
+          </section>
+
+          <section class="product-panel" role="tabpanel" id="panel-review" aria-labelledby="tab-review" hidden>
+            <div class="review-demo">
+              <aside class="review-aside">
+                <small>近期关注方向</small>
+                <h4>让 AI 真正减轻教师的重复工作，而不是增加新的负担。</h4>
+                <div class="capacity"><small>FOCUS</small><strong>7 / 10</strong></div>
+                <div class="capacity"><small>ENGAGE</small><strong>3 / 4</strong></div>
+              </aside>
+              <div class="review-lane review-lane--forward">
+                <h4>值得前进一步</h4>
+                <div class="mini-choice">课堂反馈自动整理</div>
+                <div class="mini-choice">学生概念误区图谱</div>
+                <div class="mini-choice">AI 备课评估框架</div>
+              </div>
+              <div class="review-lane review-lane--release">
+                <h4>需要让位或停止</h4>
+                <div class="mini-choice">三个月没有动作的课程</div>
+                <div class="mini-choice">不再符合方向的工具尝试</div>
+              </div>
+            </div>
+          </section>
+
+          <section class="product-panel" role="tabpanel" id="panel-insights" aria-labelledby="tab-insights" hidden>
+            <div class="insight-demo">
+              <div class="insight-block">
+                <h4>当前阶段分布</h4>
+                <div class="bar-row"><span>Radar</span><span class="bar"><i style="width:82%"></i></span><strong>18</strong></div>
+                <div class="bar-row"><span>Focus</span><span class="bar"><i style="width:46%"></i></span><strong>7</strong></div>
+                <div class="bar-row"><span>Engage</span><span class="bar"><i style="width:28%"></i></span><strong>3</strong></div>
+                <div class="bar-row"><span>Outcome</span><span class="bar"><i style="width:34%"></i></span><strong>5</strong></div>
+              </div>
+              <div class="insight-block">
+                <h4>注意力正在流向哪里</h4>
+                <div class="topic-orbit"><div class="topic-donut" aria-label="关注领域示例圆环图"></div></div>
+              </div>
+            </div>
+          </section>
+        </div>
+        <p class="showcase-note">以上内容为虚构示例，用于说明软件工作方式，不包含任何真实用户数据。</p>
+      </div>
+    </section>
+
+    <section class="features" id="features" aria-labelledby="features-title">
+      <div class="section-shell">
+        <div class="features-head reveal">
+          <div>
+            <div class="section-kicker">DESIGNED FOR CHOICE</div>
+            <h2 class="section-title" id="features-title">把选择权，<br>留在自己手中。</h2>
+          </div>
+          <p class="section-intro">软件负责呈现取舍、承诺和机会成本，但不会替你把生活变成一套自动运转的目标机器。</p>
+        </div>
+
+        <div class="feature-grid reveal">
+          <article class="feature-card feature-card--lead">
+            <span class="feature-card__label">01 · HUMAN IN CONTROL</span>
+            <h3>AI 提出聚焦方向建议，<br>由你确认投入方向。</h3>
+            <p><strong>所向只在你点击之后调用 AI。</strong>标签、拆解与晋级建议都可以修改；没有确认的内容，不会擅自改变你的工作台。</p>
+            <span class="choice-seal" aria-hidden="true">YOUR CHOICE</span>
+          </article>
+          <article class="feature-card feature-card--wide">
+            <span class="feature-card__label">02 · CAPACITY</span>
+            <h3>自带刹车</h3>
+            <p><strong>Focus 与 Engage 有建议在途上限。</strong>继续加入之前，你会先看见容量和机会成本；即使任性加入，代价也不会被藏起来。</p>
+          </article>
+          <article class="feature-card feature-card--wide">
+            <span class="feature-card__label">03 · REVIEW</span>
+            <h3>定期梳理注意力</h3>
+            <p>通过结构化的<strong>注意力梳理</strong>，重新判断哪些线索值得关注、哪些事项值得投入、哪些成果应该沉淀。</p>
+          </article>
+          <article class="feature-card feature-card--half">
+            <span class="feature-card__label">04 · HANDOFF</span>
+            <h3>执行接力棒交给日历</h3>
+            <p>进入投入阶段后，将主任务、检查事项与时间安排交给<strong>日历或滴答清单</strong>。所向继续管理投入对象，而不是接管日常任务。</p>
+          </article>
+          <article class="feature-card feature-card--half">
+            <span class="feature-card__label">05 · LOCAL FIRST</span>
+            <h3>本地优先</h3>
+            <p>卡片与 AI 凭据保存在当前 Windows 用户目录，不随软件文件夹或浏览器缓存一起流转。工作区可随时导出 JSON 备份，分享绿色版也不会带上个人数据。</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="start" id="start" aria-labelledby="start-title">
+      <div class="section-shell">
+        <div class="start-header reveal">
+          <div>
+            <div class="section-kicker">START IN THREE MINUTES</div>
+            <h2 class="section-title" id="start-title">开始试试，<br>把第一条线索放进 Radar。</h2>
+          </div>
+          <p class="section-intro">启动这件事很短，真正重要的是先记录，再判断。</p>
+        </div>
+
+        <div class="download-box" id="download">
+          <div>
+            <h3>下载所向，开始自己的工作台。</h3>
+            <p>Windows 免安装版 · v1.0.1 · 完整解压后双击 Worthward.exe。首次打开会显示 5 张入门示例卡。</p>
+          </div>
+          <a href="https://github.com/fffuuufffuuu/worthward/releases/latest/download/Worthward-portable-1.0.1.zip">下载 ZIP</a>
+        </div>
+
+        <div class="start-route reveal">
+          <article class="start-step">
+            <div><h3>完整解压</h3><p>将压缩包解压到任意文件夹，例如 <code>D:\所向</code>。保持原有目录结构，不要单独移动其中的文件。</p></div>
+          </article>
+          <article class="start-step">
+            <div><h3>双击 Worthward.exe</h3><p>程序会在后台启动本机服务，并自动打开浏览器。若服务已经运行，只会再次显示当前工作界面。</p></div>
+          </article>
+          <article class="start-step">
+            <div><h3>记录第一条线索</h3><p>点击右上角“记录想法”，把一件可能值得关注的探索或创造放进 Radar。先记录，不必急着承诺。</p></div>
+          </article>
+          <article class="start-step">
+            <div><h3>创建桌面快捷方式</h3><p>右键 <code>Worthward.exe</code>，选择“发送到 → 桌面快捷方式”。快捷方式应始终指向解压目录中的可执行文件。</p></div>
+          </article>
+        </div>
+        <div class="start-warning reveal"><strong>先解压，再运行</strong><p>不要在压缩包内部直接双击。只有完整目录中的启动程序才能找到随软件附带的运行环境。</p></div>
+      </div>
+    </section>
+
+    <section class="faq" aria-labelledby="faq-title">
+      <div class="section-shell faq-grid">
+        <div class="reveal">
+          <div class="section-kicker">FIRST-RUN HELP</div>
+          <h2 class="section-title" id="faq-title">第一次使用，<br>可能遇到的问题。</h2>
+        </div>
+        <div class="faq-list reveal">
+          <details>
+            <summary>双击后浏览器没有自动打开怎么办？</summary>
+            <div class="answer"><p>等待几秒后，再双击一次 <code>Worthward.exe</code>。如果仍然没有反应，请确认压缩包已经完整解压，并且 <code>Worthward.exe</code>、<code>node</code>、<code>dist</code>、<code>server</code> 仍在同一软件目录结构中。</p></div>
+          </details>
+          <details>
+            <summary>可以直接从压缩包里双击运行吗？</summary>
+            <div class="answer"><p>不可以。压缩包视图不是完整的软件目录，启动器无法稳定找到需要的文件。请先完整解压，再双击 `Worthward.exe`。</p></div>
+          </details>
+          <details>
+            <summary>移动软件文件夹会丢失卡片吗？</summary>
+            <div class="answer"><p>不会。卡片保存在当前 Windows 用户目录，而不是软件文件夹。但桌面快捷方式仍指向旧位置时需要重新创建。</p></div>
+          </details>
+          <details>
+            <summary>如何备份或换电脑？</summary>
+            <div class="answer"><p>在“设置”中导出 JSON。换电脑后启动一份干净绿色版，再从设置导入备份。API 密钥不会包含在 JSON 中，需要单独重新配置。</p></div>
+          </details>
+          <details>
+            <summary>所向会把本机服务开放给局域网吗？</summary>
+            <div class="answer"><p>不会。日常服务固定监听 <code>127.0.0.1</code>，只供当前电脑访问。</p></div>
+          </details>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="footer-grid">
+      <div class="footer-line">所向 · Worthward · Attention, directed.</div>
+      <div class="footer-meta">
+        <span class="footer-author">作者：CashewLab</span>
+        <a class="footer-github" href="https://github.com/fffuuufffuuu/worthward" target="_blank" rel="noreferrer">GitHub</a>
+      </div>
+      <div class="footer-note">让注意力，朝向真正值得的事。</div>
+    </div>
+  </footer>
+
+  <script>
+    document.documentElement.classList.add('js');
+
+    const tabs = [...document.querySelectorAll('[role="tab"]')];
+    const panels = [...document.querySelectorAll('[role="tabpanel"]')];
+
+    function activateTab(tab) {
+      tabs.forEach((item) => {
+        const selected = item === tab;
+        item.setAttribute('aria-selected', String(selected));
+        item.tabIndex = selected ? 0 : -1;
+      });
+      panels.forEach((panel) => {
+        panel.hidden = panel.id !== tab.dataset.panel;
+      });
+      document.querySelector('#showcase-description').textContent = tab.dataset.description;
+    }
+
+    tabs.forEach((tab, index) => {
+      tab.addEventListener('click', () => activateTab(tab));
+      tab.addEventListener('keydown', (event) => {
+        if (!['ArrowLeft', 'ArrowRight'].includes(event.key)) return;
+        event.preventDefault();
+        const direction = event.key === 'ArrowRight' ? 1 : -1;
+        const next = tabs[(index + direction + tabs.length) % tabs.length];
+        activateTab(next);
+        next.focus();
+      });
+    });
+
+    const navLinks = [...document.querySelectorAll('.nav-links a')];
+    const sections = navLinks.map((link) => document.querySelector(link.getAttribute('href'))).filter(Boolean);
+    const navObserver = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        navLinks.forEach((link) => {
+          link.setAttribute('aria-current', String(link.getAttribute('href') === `#${entry.target.id}`));
+        });
+      });
+    }, { rootMargin: '-30% 0px -62% 0px' });
+    sections.forEach((section) => navObserver.observe(section));
+  </script>
+</body>
+</html>
